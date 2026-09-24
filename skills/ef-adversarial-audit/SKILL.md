@@ -59,12 +59,15 @@ Walk the **requirement identifiers** one at a time — not the file list, not th
 the code that satisfies it and decide whether it actually does. A requirement with no traceable
 implementation is a finding.
 
-Then hunt the defect classes in `references/defect-classes.md`, each of which survives a green suite.
+Then hunt the defect classes in `.claude/skills/ef-adversarial-audit/references/defect-classes.md`, each of which survives a green suite.
 Load that file at the start of this mode.
 
 ### Evidence rules
 
 - Every finding carries `path:line` for the **reality** side.
+- Every finding carries an **evidence grade** from `.claude/skills/_shared/evidence-grades.md`. A finding graded
+  **C** or **D** is reported as a question, never as a blocker: an auditor's confident inference is
+  exactly as fallible as the implementer's, and a wrong blocker costs the owner a remediation round.
 - State what is actually there, which requirement it violates, and the concrete fix. A finding
   without a fix is an observation.
 - Distinguish **genuinely broken** from **deliberate documented deviation**. Decisions already taken
@@ -124,7 +127,7 @@ self-report problem wearing a table again.
 Run **only once verify is clean.** Emit or refresh the handoff document — the artifact another
 repository builds against.
 
-Load `references/contract-doc.md` for the required content and the fact-check pass.
+Load `.claude/skills/ef-adversarial-audit/references/contract-doc.md` for the required content and the fact-check pass.
 
 Do not write a contract over open findings: you would be publishing a defect as the interface, and
 downstream repositories would implement against it.
@@ -137,7 +140,7 @@ Record what shipped, what did not, and every accepted gap as an amendment to the
 update the RFC header's per-repo status. That header is the only cross-repo delivery status in the
 harness.
 
-See `skills/ef-feature-docs/references/amendments.md`.
+See `.claude/skills/ef-feature-docs/references/amendments.md`.
 
 ---
 

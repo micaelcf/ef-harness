@@ -8,7 +8,7 @@ Additional notes: $2
 
 Stage 3 of 5 · per target repo · the docs are Stage 2 output, not repo truth · next: `/ef:implement`
 
-Run the discovery protocol in `skills/ef-perspective-discovery/SKILL.md` against those docs, from
+Run the discovery protocol in `.claude/skills/ef-perspective-discovery/SKILL.md` against those docs, from
 the perspective of the repository you are currently in. Read that skill first — it is the method,
 and it is mandatory.
 

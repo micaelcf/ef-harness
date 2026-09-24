@@ -7,7 +7,7 @@ Feature docs: $1
 
 Stage 3 pre-check · per target repo · docs come from Stage 2 · next: `/ef:perspective-discovery`
 
-Run **only the anchor-verification stage** (Step 1) of `skills/ef-perspective-discovery/SKILL.md`
+Run **only the anchor-verification stage** (Step 1) of `.claude/skills/ef-perspective-discovery/SKILL.md`
 against those docs, for the repository you are currently in. Do not run the scout fan-out, do not
 triage, do not grill, do not implement.
 

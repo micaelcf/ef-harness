@@ -66,6 +66,12 @@ Report a table plus a count per verdict. **Any `FICTION` or `CHANGED` on a load-
 the docs cannot be trusted as written**, and every decision resting on that claim is reopened. Say so
 explicitly, and amend the RFC where the claim was load-bearing for a decision.
 
+**Check each failure against the decisions' `Would reopen if` conditions** in `grill-decisions`. That
+field exists so this step is a match rather than a judgement call: a false claim that satisfies a
+stated reopen condition reopens that decision by its own terms, and one that satisfies none is a
+correction to the docs rather than a reversal. Without the match, every false claim triggers the same
+undifferentiated alarm and the one that matters gets lost among them.
+
 Cheap, mechanical, and it prevents the tax where a wrong spec is discovered one amendment at a time
 during implementation. `/ef:spec-drift` runs this step alone.
 
@@ -74,6 +80,17 @@ during implementation. `/ef:spec-drift` runs this step alone.
 ## Step 2 — Scout fan-out
 
 Read-only subagents in parallel, one per **area of this repo the feature touches**.
+
+### First: is a fan-out warranted?
+
+**Can you name the files this feature changes, before starting?**
+
+- **Yes** → skip the fan-out. Step 1's anchor check plus a direct read of those files is enough, and
+  four scouts would return what you already know. Say you skipped it and why.
+- **No** → fan out. Not knowing which files change is precisely the condition scouts exist for.
+
+Step 1 is never skipped at any scale: it is minutes of work and it is the only thing that catches a
+doc claiming something false. The fan-out is the expensive half, and it is the conditional one.
 
 ### Picking the axes
 
@@ -94,6 +111,16 @@ the presentation layer's routing, state, components and i18n conventions.
 Always include a **conventions** scout: how does this repo wire a new unit of this kind, what is the
 newest example to copy, and what are its gate commands? That scout's output is not disposable — it
 becomes the bindings half of the contract, and Stage 4 codes against it.
+
+### Assign each scout a lens
+
+The area says what to read; the **lens** says how. Parallel readers given the same method produce
+correlated reports however different their areas, and the fan-out buys nothing. Assign one lens per
+scout from `.claude/skills/_shared/lenses.md` — evidence-audit, assumption-surfacing, pre-mortem, red-team, or
+second-order — matched to what that area is most likely to hide.
+
+The lens is also what generates that scout's pre-registered questions. Apply the method; never name
+it in the report.
 
 ### The brief
 
@@ -153,15 +180,27 @@ Before you trust a report: **verify any scout claim you are about to make load-b
 confidently wrong occasionally, and a wrong claim baked into the contract propagates into every
 slice.
 
+Grade each claim you are about to rely on against `.claude/skills/_shared/evidence-grades.md`. Only **A** claims —
+code read at `path:line` — enter the contract unverified; **B** and below get re-read first. Triage
+bucket 3 by grade too: the weakest-evidence decision is the one most likely to be wrong, so it is the
+one to grill first, not last.
+
 ---
 
 ## Step 4 — Grill
 
-Hand bucket 3 to the grilling protocol — `/ef:grilling`, at repo altitude. One question at a time,
-each grounded in a finding, each with options, tradeoffs and a recommendation.
+Hand bucket 3 to `.claude/skills/ef-grilling/SKILL.md`, at **repo altitude** — the protocol, the bias guards
+and the record shape are there. One question at a time, each grounded in a finding with its evidence
+grade, each with options, tradeoffs and a recommendation.
+
+Every closed decision takes the record shape in
+`.claude/skills/ef-grilling/references/decision-record.md`, and its `Would reopen if` field is what lets a
+later anchor failure reverse it by its own terms.
 
 Bucket 2 answers are stated as decisions you took, with evidence, so they can be vetoed. Step 1's
-`FICTION`/`CHANGED` findings are stated as corrections, not questions.
+`FICTION`/`CHANGED` findings are stated as corrections, not questions. A question the human bounces
+back is handled by `.claude/skills/ef-grilling/references/deadlock.md` — never by quietly recording your own
+prior as their decision.
 
 ---
 

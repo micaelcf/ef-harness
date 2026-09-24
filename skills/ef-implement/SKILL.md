@@ -67,7 +67,7 @@ land on real paths and reuse what exists.
 Missing one is normal and asking is cheap. Proceeding on a guess is not: a vague check becomes a
 vague assertion that passes, which is the single failure this stage exists to prevent.
 
-Then walk `references/sweep.md` — the requirements nobody writes down — and say where each one
+Then walk `.claude/skills/ef-implement/references/sweep.md` — the requirements nobody writes down — and say where each one
 landed. "Already covered by X" and "not in scope because X" are complete answers. Silence is not, and
 neither is a generic one: *"authorization: handled"* is silence with a word in front of it.
 
@@ -75,7 +75,7 @@ Raising a sweep item is always free. Growing scope is the user's call.
 
 ### Format
 
-Read `references/checklist-format.md` when you write `.checks/<feature>.md` — after the contract is
+Read `.claude/skills/ef-implement/references/checklist-format.md` when you write `.checks/<feature>.md` — after the contract is
 read, the refuse gate is passed and the sweep is walked. Do not load it during the first pass.
 
 ---
@@ -85,7 +85,7 @@ read, the refuse gate is passed and the sweep is walked. Do not load it during t
 You decide how. Write the tests from the checks, implement, run each proof, commit in coherent
 pieces following the repo's commit convention.
 
-Slices run in **parallel**, one agent per ownership set. `references/orchestration.md` holds the
+Slices run in **parallel**, one agent per ownership set. `.claude/skills/ef-implement/references/orchestration.md` holds the
 weighing, the ownership rules and the wave boundary.
 
 Two boundaries, about scope rather than care: capability nobody asked for and unrelated refactors are
@@ -118,7 +118,7 @@ RFC and PRD the next repository will read: a shipped shape that differs from the
 mechanism that does not exist, a pre-existing defect surfaced in the blast radius, an assumption whose
 invalidation trigger fired.
 
-See `skills/ef-feature-docs/references/amendments.md`. Nothing enforces this; it is also the highest
+See `.claude/skills/ef-feature-docs/references/amendments.md`. Nothing enforces this; it is also the highest
 value thing this stage produces for anyone but you.
 
 ---

@@ -58,7 +58,7 @@ Do not author a "final" RFC. Stage 3 amends it when an anchor comes back false, 
 shipped shape differs from the design, Stage 5 when something did not ship. Its header is the only
 home for cross-repo delivery status.
 
-Read `references/amendments.md` before writing the header, so the document has somewhere for that
+Read `.claude/skills/ef-feature-docs/references/amendments.md` before writing the header, so the document has somewhere for that
 to land.
 
 ## Language
@@ -71,15 +71,35 @@ its own locale. Technical terms stay in English regardless.
 This skill authors **once**. It is a post-grill step, not a regenerator: after the first authoring,
 these documents change only through amendments. That is why there is no merge behaviour to define.
 
+## Scale
+
+Read the **scale** declared in the grill-decisions header.
+
+At `standard` and `multi`, author the full set: RFC, PRD, INDEX.
+
+At `single` — one repository, no one-way door — collapse the RFC and the PRD into **one document**,
+`DECISIONS_<feature>.md`, and skip INDEX unless the folder holds more than two files. Keep:
+
+- the decisions with their anchors, evidence grades, rejected options and rationale
+- the assumptions table, with evidence grades and invalidation triggers
+- the requirements, with stable identifiers and acceptance criteria
+- non-goals, risks and open questions
+
+Drop the cross-repo apparatus: target-repo status rows, per-repo contributors, and the handoff
+document. There is one repo, so the code is the contract and the audit reads it directly.
+
+Two documents for a four-requirement feature cost tokens at every downstream stage and hide nothing
+extra. The amendment protocol works unchanged on one file.
+
 ## References — load at the step that needs them
 
 | File | Load when |
 |---|---|
-| `references/rfc-template.md` | writing the RFC |
-| `references/prd-template.md` | writing the PRD |
-| `references/index-template.md` | writing INDEX.md |
-| `references/amendments.md` | writing the RFC header, or amending later |
-| `references/anti-patterns.md` | before finalising either document |
+| `.claude/skills/ef-feature-docs/references/rfc-template.md` | writing the RFC |
+| `.claude/skills/ef-feature-docs/references/prd-template.md` | writing the PRD |
+| `.claude/skills/ef-feature-docs/references/index-template.md` | writing INDEX.md |
+| `.claude/skills/ef-feature-docs/references/amendments.md` | writing the RFC header, or amending later |
+| `.claude/skills/ef-feature-docs/references/anti-patterns.md` | before finalising either document |
 
 Do not load them during the first pass over the grill decisions.
 

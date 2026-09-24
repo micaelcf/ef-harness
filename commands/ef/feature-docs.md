@@ -8,7 +8,7 @@ Grill decisions: $2
 
 Stage 2 of 5 · once per feature · after `/ef:grilling` · next: `/ef:perspective-discovery` per repo
 
-Author `docs/features/<feature>/` from the closed decisions. Read `skills/ef-feature-docs/SKILL.md`
+Author `docs/features/<feature>/` from the closed decisions. Read `.claude/skills/ef-feature-docs/SKILL.md`
 first — it holds the method, the templates and the amendment protocol.
 
 You are **transcribing and structuring decisions already made**. You are not re-deciding them, not
@@ -36,7 +36,7 @@ produce.
 
 Do not author a "final" RFC. Stages 3, 4 and 5 amend it in place as discovery contradicts it and as
 each repo delivers, and its header is the only home for cross-repo delivery status. The amendment
-rules are in `skills/ef-feature-docs/references/amendments.md`; read them before writing the header
+rules are in `.claude/skills/ef-feature-docs/references/amendments.md`; read them before writing the header
 so the document has somewhere for that to land.
 
 ## Language

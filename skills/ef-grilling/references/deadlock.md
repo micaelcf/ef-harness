@@ -16,7 +16,7 @@ decision, and three stages later a contract rests on something nobody actually c
 | **Genuine indifference** | The user has no preference because the options are technically equivalent *to them* | You decide — see *deciding it yourself* below |
 | **Deferral to expertise** | "You know the code better" | You decide, but the decision must be recorded as **yours**, with evidence, so it can be vetoed |
 | **Unanswerable today** | It depends on information nobody in the room has | Record as **STILL OPEN** with what it is blocked on. Do not force it |
-| **A design question** | "What should this screen look like?" — the user genuinely does not know until they see it | Not unanswerable and not yours to decide: **prototype it**. See `.claude/skills/ef-prototype/SKILL.md`. Check its gate first — a form or a table is built, not prototyped |
+| **A design question** | "What should this screen look like?" — the user genuinely does not know until they see it | Not unanswerable and not yours to decide: **prototype it**. Load the `ef-prototype` skill. Check its gate first — a form or a table is built, not prototyped |
 | **Avoidance** | The question is uncomfortable — cost, scope cut, someone's earlier work | Ask once more, smaller and more concrete. If it still bounces, record it as still open and name the blocker honestly |
 
 **Getting this classification right matters more than the protocol below.** Four of the six kinds are
@@ -59,7 +59,7 @@ Otherwise decide it yourself and move on. A panel on a cheap, reversible choice 
    makes every downstream opinion worthless.
 
 2. **Assemble three readers**, spawned in parallel, each with a **different lens** from
-   `.claude/skills/_shared/lenses.md` and a different primary concern. One must argue **for** the leading option,
+   the `ef-shared` skill's `references/lenses.md` and a different primary concern. One must argue **for** the leading option,
    one **against** it or for the best alternative, and one owns the criteria and resists premature
    agreement.
 

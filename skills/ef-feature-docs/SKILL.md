@@ -58,13 +58,14 @@ Do not author a "final" RFC. Stage 3 amends it when an anchor comes back false, 
 shipped shape differs from the design, Stage 5 when something did not ship. Its header is the only
 home for cross-repo delivery status.
 
-Read `.claude/skills/ef-feature-docs/references/amendments.md` before writing the header, so the document has somewhere for that
+Read `references/amendments.md` before writing the header, so the document has somewhere for that
 to land.
 
 ## Language
 
-Author in **English** unless the user asks for pt-BR. Product copy quoted inside the documents keeps
-its own locale. Technical terms stay in English regardless.
+Author in **English** unless the user, or the repository's `ef-harness` block, names another
+language. Product copy quoted inside the documents keeps its own locale. Technical terms stay in
+English regardless.
 
 ## Scope
 
@@ -95,11 +96,11 @@ extra. The amendment protocol works unchanged on one file.
 
 | File | Load when |
 |---|---|
-| `.claude/skills/ef-feature-docs/references/rfc-template.md` | writing the RFC |
-| `.claude/skills/ef-feature-docs/references/prd-template.md` | writing the PRD |
-| `.claude/skills/ef-feature-docs/references/index-template.md` | writing INDEX.md |
-| `.claude/skills/ef-feature-docs/references/amendments.md` | writing the RFC header, or amending later |
-| `.claude/skills/ef-feature-docs/references/anti-patterns.md` | before finalising either document |
+| `references/rfc-template.md` | writing the RFC |
+| `references/prd-template.md` | writing the PRD |
+| `references/index-template.md` | writing INDEX.md |
+| `references/amendments.md` | writing the RFC header, or amending later |
+| `references/anti-patterns.md` | before finalising either document |
 
 Do not load them during the first pass over the grill decisions.
 

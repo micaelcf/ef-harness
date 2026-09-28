@@ -70,7 +70,7 @@ Each assumption gets an **evidence grade** and an **invalidation trigger**:
 | 1 | <claim, with its anchor or "unverified"> | @who | A/B/C/D | <the concrete event that breaks it> |
 ```
 
-Grades come from `.claude/skills/_shared/evidence-grades.md`, the same scale every stage uses. A **C** or **D**
+Grades come from the `ef-shared` skill's `references/evidence-grades.md`, the same scale every stage uses. A **C** or **D**
 assumption that is load-bearing must carry a cheap test alongside its trigger, or be asked about
 rather than assumed.
 

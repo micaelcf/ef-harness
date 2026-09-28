@@ -33,8 +33,8 @@ costs you credibility for the questions that matter.
 1. **Read** the plan, docs, or code under discussion.
 2. **Verify its claims.** Anything asserted about code — a file, a symbol, a behaviour, a "we already
    have X" — is a **claim** until you check it. Check it, and grade what you find against
-   `.claude/skills/_shared/evidence-grades.md`.
-3. **Run the material through two or three lenses** from `.claude/skills/_shared/lenses.md`. The lens is your
+   the `ef-shared` skill's `references/evidence-grades.md`.
+3. **Run the material through two or three lenses** from the `ef-shared` skill's `references/lenses.md`. The lens is your
    question generator: assumption-surfacing produces *"which of these is actually established?"*,
    pre-mortem produces *"what does this look like when it fails?"*, second-order produces *"what does
    this make true next year?"* Neutral reading produces neutral questions.
@@ -72,8 +72,8 @@ name the thing you are copying?**
 
 - **Can you name the files this changes?** No → Stage 3 runs its scout fan-out. Yes → the anchor
   check alone is enough.
-- **Can you name an existing screen or well-known pattern the new UI is a variation of?** No → run
-  `.claude/skills/ef-prototype/SKILL.md` before writing requirements, because the chosen variant
+- **Can you name an existing screen or well-known pattern the new UI is a variation of?** No → load
+  the `ef-prototype` skill before writing requirements, because the chosen variant
   governs what the screen must show and therefore what the contract must return. Yes → it gets built,
   not prototyped.
 
@@ -155,12 +155,12 @@ execute it without relitigating.
 
 ## After each answer
 
-Record it immediately in the shape defined by `.claude/skills/ef-grilling/references/decision-record.md`. Then reassess — an
+Record it immediately in the shape defined by `references/decision-record.md`. Then reassess — an
 answer often kills or reshapes a later question, and sometimes creates a new one that must be asked
 before you move on.
 
 If the human declines to decide — *"you decide"*, *"I don't know"*, *"what do you think?"* — do not
-quietly record your own prior as their decision. Read `.claude/skills/ef-grilling/references/deadlock.md`.
+quietly record your own prior as their decision. Read `references/deadlock.md`.
 
 ## Termination
 
@@ -198,9 +198,11 @@ deliverable; `/ef:feature-docs` is the next stage.
 
 ## References — load when the step needs them
 
+Paths are relative to this skill's directory, except the two that live in the `ef-shared` skill.
+
 | File | Load when |
 |---|---|
-| `.claude/skills/_shared/evidence-grades.md` | grounding, before the first question |
-| `.claude/skills/_shared/lenses.md` | generating the candidate question list |
-| `.claude/skills/ef-grilling/references/decision-record.md` | recording the first closed decision |
-| `.claude/skills/ef-grilling/references/deadlock.md` | the human declines to decide |
+| `ef-shared` skill → `references/evidence-grades.md` | grounding, before the first question |
+| `ef-shared` skill → `references/lenses.md` | generating the candidate question list |
+| `references/decision-record.md` | recording the first closed decision |
+| `references/deadlock.md` | the human declines to decide |

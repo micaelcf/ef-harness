@@ -70,7 +70,7 @@ before it starts.
 ## What is NOT an amendment
 
 A reversible implementation choice — naming, error shape, where a helper went, which package a type
-lives in. Those live in the diff and in `.checks/<feature>.md`'s `Landing` section.
+lives in. Those live in the diff and in `.ef/<feature>/checks.md`'s `Landing` section.
 
 Amending the RFC for them regenerates exactly the stale design document that deferring to the code
 was meant to avoid. The test: **would a sibling repo's builder make a worse decision without knowing

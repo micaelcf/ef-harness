@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ef-harness",
+  "owner": {
+    "name": "Micael Fernandes",
+    "url": "https://github.com/micaelcf"
+  },
+  "metadata": {
+    "description": "The EF feature-delivery harness for Claude Code and omp."
+  },
+  "plugins": [
+    {
+      "name": "ef",
+      "source": "./",
+      "description": "Five-stage, repo-agnostic feature pipeline: grill the decisions, author RFC/PRD, discover per repo, build against named proofs, then one adversarial audit gate.",
+      "category": "development",
+      "homepage": "https://github.com/micaelcf/ef-harness",
+      "license": "MIT"
+    }
+  ]
+}

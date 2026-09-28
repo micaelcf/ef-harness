@@ -7,8 +7,8 @@ Run a grilling session over: $ARGUMENTS
 
 If that is empty, grill whatever plan or design is live in this conversation.
 
-Read `.claude/skills/ef-grilling/SKILL.md` first — it holds the protocol, the two altitudes, the decision
-record shape and the deadlock rules.
+Load the `ef-grilling` skill first — it holds the protocol, the two altitudes, the decision record
+shape and the deadlock rules.
 
 ## The pipeline
 
@@ -16,7 +16,7 @@ record shape and the deadlock rules.
 Stage 1  /ef:grilling                 close decisions            grill-decisions
 Stage 2  /ef:feature-docs             author the folder          RFC · PRD · INDEX
 Stage 3  /ef:perspective-discovery    per repo, anchors → grill  the contract
-Stage 4  /ef:implement                per repo, fan-out          .checks/<feature>.md
+Stage 4  /ef:implement                per repo, fan-out          .ef/<feature>/checks.md
 Stage 5  /ef:audit                    per repo, single gate      the handoff doc
 ```
 

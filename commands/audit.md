@@ -8,8 +8,8 @@ Mode: $2 (default `audit` when empty)
 
 Stage 5 of 5 · per target repo, after that repo's implementation · the single audit gate
 
-Run `.claude/skills/ef-adversarial-audit/SKILL.md` in that mode against the work delivered in the repository
-you are currently in. Read the skill first — it holds the rubric.
+Load the `ef-adversarial-audit` skill and run it in that mode against the work delivered in the
+repository you are currently in. Read the skill first — it holds the rubric.
 
 ## Before you spawn it
 

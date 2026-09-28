@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "ef",
+  "displayName": "EF Harness",
+  "version": "0.1.0",
+  "description": "Five-stage, repo-agnostic feature pipeline: grill the decisions, author RFC/PRD, discover per repo, build against named proofs, then one adversarial audit gate.",
+  "author": {
+    "name": "Micael Fernandes",
+    "url": "https://github.com/micaelcf"
+  },
+  "homepage": "https://github.com/micaelcf/ef-harness",
+  "repository": "https://github.com/micaelcf/ef-harness",
+  "license": "MIT",
+  "keywords": ["workflow", "rfc", "prd", "grilling", "discovery", "audit", "spec-driven"]
+}

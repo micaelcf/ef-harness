@@ -3,7 +3,7 @@
 How Stage 4 runs the build across parallel agents. Load this at Build, not at Extract.
 
 The contract exists to make concurrency safe. Everything here assumes it is written and in
-`.checks/<feature>.md`.
+`.ef/<feature>/checks.md`.
 
 ---
 

@@ -1,6 +1,6 @@
 # Checklist format
 
-Load this only when writing `.checks/<feature>.md` — after the contract is read, the refuse gate is
+Load this only when writing `.ef/<feature>/checks.md` — after the contract is read, the refuse gate is
 passed and the sweep is walked. Do not load it during the first pass of Extract.
 
 Replace every placeholder with a concrete value, or omit the section. A heading with "N/A" under it
@@ -187,7 +187,7 @@ lives in the test.
 ## Ordering is what makes it reviewable
 
 The checklist is complete **before** you touch code, so it reads as what you were building toward
-rather than a rationalisation of what you built. Where the project tracks `.checks/`, that ordering is
+rather than a rationalisation of what you built. Where the project tracks `.ef/`, that ordering is
 worth a commit of its own before any implementation commit; where it does not, the ordering still
 holds and nothing about it depends on version control.
 

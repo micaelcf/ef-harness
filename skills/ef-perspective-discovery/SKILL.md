@@ -116,7 +116,7 @@ becomes the bindings half of the contract, and Stage 4 codes against it.
 
 The area says what to read; the **lens** says how. Parallel readers given the same method produce
 correlated reports however different their areas, and the fan-out buys nothing. Assign one lens per
-scout from `.claude/skills/_shared/lenses.md` — evidence-audit, assumption-surfacing, pre-mortem, red-team, or
+scout from the `ef-shared` skill's `references/lenses.md` — evidence-audit, assumption-surfacing, pre-mortem, red-team, or
 second-order — matched to what that area is most likely to hide.
 
 The lens is also what generates that scout's pre-registered questions. Apply the method; never name
@@ -180,7 +180,7 @@ Before you trust a report: **verify any scout claim you are about to make load-b
 confidently wrong occasionally, and a wrong claim baked into the contract propagates into every
 slice.
 
-Grade each claim you are about to rely on against `.claude/skills/_shared/evidence-grades.md`. Only **A** claims —
+Grade each claim you are about to rely on against the `ef-shared` skill's `references/evidence-grades.md`. Only **A** claims —
 code read at `path:line` — enter the contract unverified; **B** and below get re-read first. Triage
 bucket 3 by grade too: the weakest-evidence decision is the one most likely to be wrong, so it is the
 one to grill first, not last.
@@ -189,17 +189,17 @@ one to grill first, not last.
 
 ## Step 4 — Grill
 
-Hand bucket 3 to `.claude/skills/ef-grilling/SKILL.md`, at **repo altitude** — the protocol, the bias guards
+Hand bucket 3 to the `ef-grilling` skill, at **repo altitude** — the protocol, the bias guards
 and the record shape are there. One question at a time, each grounded in a finding with its evidence
 grade, each with options, tradeoffs and a recommendation.
 
-Every closed decision takes the record shape in
-`.claude/skills/ef-grilling/references/decision-record.md`, and its `Would reopen if` field is what lets a
+Every closed decision takes the record shape in the `ef-grilling` skill's
+`references/decision-record.md`, and its `Would reopen if` field is what lets a
 later anchor failure reverse it by its own terms.
 
 Bucket 2 answers are stated as decisions you took, with evidence, so they can be vetoed. Step 1's
 `FICTION`/`CHANGED` findings are stated as corrections, not questions. A question the human bounces
-back is handled by `.claude/skills/ef-grilling/references/deadlock.md` — never by quietly recording your own
+back is handled by the `ef-grilling` skill's `references/deadlock.md` — never by quietly recording your own
 prior as their decision.
 
 ---
@@ -209,7 +209,7 @@ prior as their decision.
 Do not delegate this. Before any implementation subagent starts, **you** write the shared surface
 every slice codes against.
 
-Write it to `.checks/<feature>.md` under a `## Contract` heading, in this repository. It must be a
+Write it to `.ef/<feature>/checks.md` under a `## Contract` heading, in this repository. It must be a
 file: parallel slices cannot read a conversation, and a contract that is retyped per batch degrades
 into a paraphrase, which is the divergence it existed to prevent.
 
@@ -250,5 +250,5 @@ Then `/ef:implement` may begin.
 2. Contradictions, ranked by consequence, each with `path:line`.
 3. Decisions you took yourself, with evidence.
 4. Closed decisions from the grilling, each with rationale and what it supersedes.
-5. The contract, written to `.checks/<feature>.md`.
+5. The contract, written to `.ef/<feature>/checks.md`.
 6. Any amendment the anchor check owes the RFC.

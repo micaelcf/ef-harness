@@ -8,8 +8,7 @@ Feature docs: $2
 
 Optional · runs inside Stage 1, before `/ef:feature-docs` and before any contract is frozen
 
-Read `.claude/skills/ef-prototype/SKILL.md` — it holds the gate, the variant rules and the capture
-rules.
+Load the `ef-prototype` skill — it holds the gate, the variant rules and the capture rules.
 
 ## Check the gate first
 

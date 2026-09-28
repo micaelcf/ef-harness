@@ -7,7 +7,7 @@ Feature docs: $1
 
 Stage 4 of 5 · per target repo · after `/ef:perspective-discovery` closed decisions · next: `/ef:audit`
 
-Run `.claude/skills/ef-implement/SKILL.md` — read it first, it holds the method.
+Load the `ef-implement` skill and read it first — it holds the method.
 
 ## Do not start until all three hold
 
@@ -40,8 +40,8 @@ command.
 ## Amend the feature docs
 
 Implementation discovers that the design was wrong about the code. That discovery belongs in the
-RFC and PRD the next repo will read, not in a commit message. See
-`.claude/skills/ef-feature-docs/references/amendments.md`.
+RFC and PRD the next repo will read, not in a commit message. See the `ef-feature-docs` skill's
+`references/amendments.md`.
 
-oh-my-pi users may additionally start the turn with the `orchestrate` keyword. The skill states the
-same contract explicitly, so this command is self-sufficient in Claude Code.
+omp users may additionally start the turn with the `orchestrate` keyword. The skill states the same
+contract explicitly, so this command is self-sufficient in Claude Code.

@@ -41,7 +41,7 @@ purpose? What input was never considered?
 
 For the leading claim, ask what evidence would prove it **wrong**, whether that evidence was ever
 sought, and how strong the support actually is. Grade every key claim against
-`.claude/skills/_shared/evidence-grades.md`.
+`references/evidence-grades.md` in this skill.
 
 *Output:* a graded claim table and the single weakest link.
 

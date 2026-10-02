@@ -466,9 +466,11 @@ public API above is considered stable.
 The [release workflow](.github/workflows/release.yml) runs on every push and pull request. It
 fails if the manifest pairs differ, if the version is not valid SemVer, or if the changelog has no
 entry for it. On a tag it also requires the tag to equal `v` + the manifest version, then publishes
-the GitHub release using that changelog section as the notes. Published tags are never moved or
-deleted — a repository ruleset blocks updates and deletion of `v*` tags, and releases are
-immutable — so a bad release is fixed with a new PATCH release.
+the GitHub release using that changelog section as the notes.
+
+Published tags are never moved or deleted; a bad release is fixed with a new PATCH release. The
+repository backs this policy with a ruleset against updating or deleting `v*` tags, and with
+GitHub immutable releases for every release after `v0.1.0`.
 
 ---
 

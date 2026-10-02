@@ -5,6 +5,7 @@
 **Take a feature from raw intent to a code-verified contract — with an AI agent that has to prove
 what it built.**
 
+[![Release](https://img.shields.io/github/v/release/micaelcf/ef-harness?sort=semver)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](#claude-code)
 [![omp plugin](https://img.shields.io/badge/omp-plugin-3fb950)](#omp)
@@ -376,7 +377,9 @@ skills/                          the method — model-invoked, so it works witho
 ├── ef-implement/                + references/{checklist-format,sweep,orchestration}.md
 └── ef-adversarial-audit/        + references/{defect-classes,contract-doc}.md
 
-assets/                          README animations
+assets/                          README animations + social preview
+.github/workflows/release.yml    version checks on every push; publishes the release on a tag
+CHANGELOG.md                     every release, newest first
 ```
 
 Commands are shims; skills hold the method. A teammate who says *"implement this feature per the
@@ -418,12 +421,53 @@ A few conventions keep the harness portable:
 3. **One definition, one place.** Shared vocabulary lives in `ef-shared`, not restated per stage.
 4. **Validate before you push:** `claude plugin validate . --strict`.
 
+---
+
+## Versioning
+
+EF follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html). Every release is an
+immutable `vX.Y.Z` tag with a GitHub release, and every change is listed in
+[CHANGELOG.md](CHANGELOG.md). Both Claude Code and omp keep installs on the manifest `version`, so
+users get nothing new until it changes.
+
+### What counts as the public API
+
+A harness has no functions to call, so the contract is the set of names and shapes that users,
+their repositories and their saved artifacts depend on:
+
+1. The install identity: plugin `ef`, marketplace `ef-harness`.
+2. Command names (`/ef:<name>`) and skill names (`ef-*`).
+3. The bindings block keys and what each one means.
+4. Artifact names, locations and required sections: `grill-decisions-*`, `RFC_*`, `PRD_*`,
+   `INDEX.md`, `DECISIONS_*`, `.ef/<feature>/checks.md`, and the handoff docs.
+5. Shared vocabulary: decision-record fields, scale values, anchor statuses, evidence grades A–D.
+
+| Bump | When | Examples |
+|---|---|---|
+| **MAJOR** | Something in the public API is removed, renamed or changes meaning, so an existing install, bindings block or artifact stops working as before | rename `/ef:audit`; drop a decision-record field; move `checks.md`; remove a stage or gate |
+| **MINOR** | Something is added and everything that exists keeps working | a new command or skill; an optional bindings key; a new sweep item; a new defect class |
+| **PATCH** | The behaviour gets clearer or more correct and no name or shape changes | wording, clarified instructions, fixed references, docs |
+
+While the version is `0.y.z`, a MINOR release may break things (SemVer §4). Every such change is
+marked **BREAKING** in the changelog, along with how to migrate. `1.0.0` will be released when the
+public API above is considered stable.
+
 ### Releasing
 
-1. Bump `version` in `.claude-plugin/plugin.json` and copy both manifests over their
-   `.omp-plugin/` twins — both tools keep users on the pinned version until it changes.
-2. `claude plugin validate . --strict`
-3. Commit and push `main`.
+1. As you work, record changes under `## [Unreleased]` in `CHANGELOG.md`.
+2. Rename that heading to `## [X.Y.Z] - YYYY-MM-DD`, add an empty `## [Unreleased]` above it, and
+   update the compare links at the bottom.
+3. Set `version` in `.claude-plugin/plugin.json` and copy both manifests over their `.omp-plugin/`
+   twins.
+4. `claude plugin validate . --strict`
+5. Commit (`:bookmark: chore(release): vX.Y.Z`) and push `main`.
+6. `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z`
+
+The [release workflow](.github/workflows/release.yml) runs on every push and pull request. It
+fails if the manifest pairs differ, if the version is not valid SemVer, or if the changelog has no
+entry for it. On a tag it also requires the tag to equal `v` + the manifest version, then publishes
+the GitHub release using that changelog section as the notes. Published tags are never moved or
+deleted; a bad release is fixed with a new PATCH release.
 
 ---
 

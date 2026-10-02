@@ -1,0 +1,84 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Claude Code and omp manifests are identical
+        run: diff -r .claude-plugin .omp-plugin
+
+      - name: Version is SemVer and has a changelog entry
+        id: version
+        run: |
+          version=$(node -p "require('./.claude-plugin/plugin.json').version")
+          semver='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
+          if [[ ! $version =~ $semver ]]; then
+            echo "::error file=.claude-plugin/plugin.json::version '$version' is not SemVer"
+            exit 1
+          fi
+          if ! grep -qF "## [$version] - " CHANGELOG.md; then
+            echo "::error file=CHANGELOG.md::missing '## [$version] - YYYY-MM-DD' entry"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Tag equals v + manifest version
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if [[ "$GITHUB_REF_NAME" != "v$VERSION" ]]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match manifest version $VERSION"
+            exit 1
+          fi
+
+      - name: Plugin and marketplace validate
+        run: |
+          npx -y @anthropic-ai/claude-code plugin validate . --strict
+          npx -y @anthropic-ai/claude-code plugin validate .claude-plugin/plugin.json --strict
+
+  release:
+    needs: verify
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Extract release notes from the changelog
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          awk -v v="$VERSION" '
+            /^## \[/ { if (found) exit; if (index($0, "## [" v "] ") == 1) { found = 1; next } }
+            /^\[[^]]+\]: / { if (found) exit }
+            found
+          ' CHANGELOG.md > notes.md
+          if ! grep -q '[^[:space:]]' notes.md; then
+            echo "::error file=CHANGELOG.md::entry for $VERSION is empty"
+            exit 1
+          fi
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          flags=()
+          [[ $VERSION == *-* ]] && flags+=(--prerelease)
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" \
+            --notes-file notes.md "${flags[@]}"

@@ -11,5 +11,22 @@
   "homepage": "https://github.com/micaelcf/ef-harness",
   "repository": "https://github.com/micaelcf/ef-harness",
   "license": "MIT",
-  "keywords": ["workflow", "rfc", "prd", "grilling", "discovery", "audit", "spec-driven"]
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "agent-skills",
+    "agentic-ai",
+    "ai-agents",
+    "coding-agents",
+    "spec-driven-development",
+    "sdd",
+    "rfc",
+    "prd",
+    "ai-code-review",
+    "adversarial-audit",
+    "code-quality",
+    "context-engineering",
+    "tdd",
+    "workflow"
+  ]
 }

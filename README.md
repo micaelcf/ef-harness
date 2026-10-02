@@ -467,7 +467,8 @@ The [release workflow](.github/workflows/release.yml) runs on every push and pul
 fails if the manifest pairs differ, if the version is not valid SemVer, or if the changelog has no
 entry for it. On a tag it also requires the tag to equal `v` + the manifest version, then publishes
 the GitHub release using that changelog section as the notes. Published tags are never moved or
-deleted; a bad release is fixed with a new PATCH release.
+deleted — a repository ruleset blocks updates and deletion of `v*` tags, and releases are
+immutable — so a bad release is fixed with a new PATCH release.
 
 ---
 

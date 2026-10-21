@@ -1453,10 +1453,18 @@ function main(argv) {
 			return 0;
 		} else if (arg === '--json') args.json = true;
 		else if (arg === '--root') args.root = argv[(i += 1)];
-		else if (arg === '--only') args.only = (argv[(i += 1)] ?? '').split(',').filter((s) => s !== '');
+		else if (arg === '--only') {
+			// One path per flag, repeatable: a file name may itself contain a comma.
+			const path = argv[(i += 1)];
+			if (path === undefined || path === '') {
+				process.stderr.write('ef-check: --only needs a file\n');
+				return 2;
+			}
+			args.only = [...(args.only ?? []), path];
+		}
 		else if (arg === '--split') args.split = argv[(i += 1)];
 		else if (arg === '--help' || arg === '-h') {
-			process.stdout.write('usage: ef-check [--root <dir>] [--json] [--only <file,...>] [--split <.ef/feature>] [--version]\n');
+			process.stdout.write('usage: ef-check [--root <dir>] [--json] [--only <file>]... [--split <.ef/feature>] [--version]\n');
 			return 0;
 		} else {
 			process.stderr.write(`ef-check: unknown argument ${arg}\n`);

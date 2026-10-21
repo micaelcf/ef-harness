@@ -61,6 +61,13 @@ describe('Claude Code hook', () => {
 		assert.equal(claude(root, join(root, 'src', 'a.ts')), null);
 	});
 
+	test('checks a markdown file whose name contains a comma', () => {
+		const root = repo({ 'docs/a,b.md': 'See `src/gone.ts`.\n', 'src/a.ts': '' });
+		const out = claude(root, join(root, 'docs', 'a,b.md'));
+		assert.equal(out.decision, 'block');
+		assert.match(out.reason, /docs\/a,b\.md:1 \[anchors\]/);
+	});
+
 	test('blocks a slice file whose Reads: names a contract file that does not exist', () => {
 		const root = repo({
 			'.ef/demo/checks.md': '# Demo\n\n## Requirements\n\n- `RF-001`\n\n| S0 | [slices/S0-a.md](slices/S0-a.md) |\n',

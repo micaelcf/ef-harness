@@ -27,8 +27,12 @@ export function findOptedInRoot(start) {
 	}
 }
 
+// Under Node (Claude Code) reuse the running binary; under omp the host is not Node, so use `node`
+// from PATH — the same binary the repo's gates and CI already need for the vendored checker.
+const NODE = process.versions.bun === undefined ? process.execPath : 'node';
+
 function runChecker(root, only) {
-	const run = spawnSync('node', [join(root, VENDORED), '--root', root, '--json', '--only', only.join(',')], {
+	const run = spawnSync(NODE, [join(root, VENDORED), '--root', root, '--json', ...only.flatMap((f) => ['--only', f])], {
 		encoding: 'utf8',
 		timeout: 20_000,
 		windowsHide: true

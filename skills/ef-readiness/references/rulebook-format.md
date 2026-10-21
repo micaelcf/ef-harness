@@ -164,7 +164,7 @@ The format, and what each rule protects, is the `ef-implement` skill's
 ```text
 node .ef/bin/ef-check.mjs                 # every gate, text report
 node .ef/bin/ef-check.mjs --json          # the same, machine-readable
-node .ef/bin/ef-check.mjs --only a.md,b.md   # only findings reported on those files (the hook uses this)
+node .ef/bin/ef-check.mjs --only a.md --only b.md   # only findings reported on those files (the hook uses this)
 node .ef/bin/ef-check.mjs --split .ef/<feature>   # migrate a one-file checklist to the split layout
 node .ef/bin/ef-check.mjs --version
 ```

@@ -14,7 +14,8 @@ Load the `ef-implement` skill and read it first — it holds the method.
 1. Discovery ran in **this** repo and no `FICTION` or `CHANGED` verdict is left unresolved on a
    load-bearing claim.
 2. The decisions are closed and the human said so.
-3. **You** wrote the contract — interfaces, data shapes, transaction and error boundaries, naming.
+3. **You** wrote the contract — interfaces, data shapes, transaction and error boundaries, naming —
+   as files in `.ef/<feature>/contract/` (a `## Contract` section of `checks.md` at `single` scale).
    Never delegated: anything left for slices to negotiate between themselves diverges, because they
    cannot see each other.
 
@@ -29,6 +30,10 @@ EXTRACT ─────────→ BUILD ─────────→ VERI
 
 The thinking already happened in Stages 1–3. Lose nothing from it, prove what you build, and hand a
 *whole feature* to Stage 5.
+
+Each builder is briefed with three things and nothing more: the index `.ef/<feature>/checks.md`, the
+contract files its slice names under `Reads:`, and its own `slices/S<n>-*.md`. Run
+`node .ef/bin/ef-check.mjs` after writing the checklist where the repo vendors it.
 
 ## Concrete commands come from the repo
 

@@ -209,9 +209,20 @@ prior as their decision.
 Do not delegate this. Before any implementation subagent starts, **you** write the shared surface
 every slice codes against.
 
-Write it to `.ef/<feature>/checks.md` under a `## Contract` heading, in this repository. It must be a
-file: parallel slices cannot read a conversation, and a contract that is retyped per batch degrades
-into a paraphrase, which is the divergence it existed to prevent.
+Write it as files in this repository. It must be files: parallel slices cannot read a
+conversation, and a contract that is retyped per batch degrades into a paraphrase, which is the
+divergence it existed to prevent.
+
+- At `standard` and `multi` scale: one file per topic under `.ef/<feature>/contract/` —
+  `bindings.md`, `signatures.md`, `boundaries.md`, `naming.md`, and a file for each section only one
+  slice consumes (the schema the producing slice writes, the enums it declares). **Split by who reads
+  it**: a builder loads only the contract files its slice names, so a topic every slice needs and a
+  topic one slice needs must not share a file.
+- At `single` scale: a `## Contract` section in `.ef/<feature>/checks.md`.
+
+The requirement identifiers this repo owns go in `checks.md` under `## Requirements`; the anchor table
+and the decisions taken in discovery go in `.ef/<feature>/log.md` (a `## Log` section at `single`).
+The ef-implement skill's `references/checklist-format.md` holds the layout.
 
 The contract carries:
 
@@ -221,7 +232,6 @@ The contract carries:
 - **Bindings** — the gate commands, identifier rule, generated-code rule and test conventions the
   conventions scout found, as the feature-specific delta on top of the repo's own `ef-harness`
   declaration.
-- **Requirement identifiers** owned by this repo.
 
 Concurrent edits to the same files resolve fine — but only because the contract was decided first and
 stated in the batch context. Anything left for slices to negotiate between themselves will diverge.
@@ -250,5 +260,6 @@ Then `/ef:implement` may begin.
 2. Contradictions, ranked by consequence, each with `path:line`.
 3. Decisions you took yourself, with evidence.
 4. Closed decisions from the grilling, each with rationale and what it supersedes.
-5. The contract, written to `.ef/<feature>/checks.md`.
+5. The contract, written to `.ef/<feature>/contract/` (or `checks.md` at `single` scale), with the
+   owned requirement ids in `checks.md` and the anchor table and discovery decisions in `log.md`.
 6. Any amendment the anchor check owes the RFC.

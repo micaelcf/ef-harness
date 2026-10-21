@@ -2,8 +2,8 @@
 
 How Stage 4 runs the build across parallel agents. Load this at Build, not at Extract.
 
-The contract exists to make concurrency safe. Everything here assumes it is written and in
-`.ef/<feature>/checks.md`.
+The contract exists to make concurrency safe. Everything here assumes it is written — in
+`.ef/<feature>/contract/`, or in `checks.md` at `single` scale.
 
 ---
 
@@ -23,7 +23,8 @@ one file is not parallelism, it is a merge conflict with a schedule.
 Where a file is irreducibly shared — a route table, a container registration, a schema index — name a
 **single integration owner** and serialise only that boundary. Everything else stays parallel.
 
-Write the ownership table into the checklist before spawning. An unowned file is the one that breaks.
+Write ownership before spawning — each slice file's `Owns:` line, or the ownership table at
+`single` scale. An unowned file is the one that breaks.
 
 ---
 
@@ -48,15 +49,23 @@ reads different code. There the next agent had to read it anyway, and nothing is
 
 ## What every batch carries
 
-In shared context, once, for the whole batch:
+**Paths, not pasted text.** Every builder reads the same files, so nothing it codes against can
+drift into a paraphrase:
 
-- **the contract, verbatim** — not a pointer to a conversation the slices cannot see
-- **the bindings** — gate commands, identifier rule, generated-code rule, test conventions, and the
+- the index, `.ef/<feature>/checks.md` — sources, requirements, ownership of shared files, Landing
+- the **contract files its slice names under `Reads:`** — verbatim, and only those
+- **its own slice file** — what it owns, its checks and their proofs
+- the **bindings** — gate commands, identifier rule, generated-code rule, test conventions, and the
   newest file to copy for this kind of unit
-- **the requirement identifiers and checks** each slice owns
-- **the ownership table**, so every agent knows what it must not touch
 
-Per slice: exact files and symbols, explicit non-goals, and the observable outcome it must reach.
+A builder never loads another slice's file, `verification.md` or `log.md`. Those are for the lead
+and the auditor; loading them is the token cost the split exists to remove. The one exception is a
+builder resuming a slice after a handoff or a compaction: it reads only the `log.md` entries since
+that slice's last green boundary.
+
+Per slice: the observable outcome it must reach and the files it owns — its slice file states both
+— plus its non-goals: the index's `Out of scope`, and anything slice-specific the lead adds to the
+brief. Exact symbols come from the contract files it reads.
 
 ---
 
@@ -103,13 +112,14 @@ the mistake with a friendly face.
 Compaction summarises the **conversation** and chooses for you what to drop. A handoff carries the
 **artifact**, at a boundary you chose.
 
-So when a slice must hand over: only on green, with the next agent reading the checklist and the
-**diff of what has landed** — never a narrative summary of it. The diff is the state, and it carries
-the hundred reversible choices that sit below the `Landing` bar: naming, error shape, where the helper
-went. Those are exactly what drifts between agents and exactly what no document records.
+So when a slice must hand over: only on green, with the next agent reading the index, its slice
+file, the contract files it `Reads:`, the tail of `log.md` and the **diff of what has landed** —
+never a narrative summary of it. The diff is the state, and it carries the hundred reversible
+choices that sit below the `Landing` bar: naming, error shape, where the helper went. Those are
+exactly what drifts between agents and exactly what no document records.
 
-Then append to the checklist — not to the next agent's prompt, because a briefing written into a
-prompt survives exactly one boundary:
+Then append to `log.md` (the `## Log` section at `single` scale) — not to the next agent's prompt,
+because a briefing written into a prompt survives exactly one boundary:
 
 - **where the boundary fell** — the checks now closed and the commit that closed them
 - **what the user settled mid-build** — every clarification that did not become a `Landing` row or an
@@ -117,6 +127,6 @@ prompt survives exactly one boundary:
 - **what was abandoned** — tried, discarded, and why. The one thing neither the code nor the
   checklist preserves
 
-**When compaction happens anyway**, re-read the checklist and the diff before continuing. You cannot
-see the limit approaching, but you can see that a compaction occurred — build the recovery on the
-signal that exists.
+**When compaction happens anyway**, re-read the index, your slice file, the contract files it
+`Reads:`, the tail of `log.md` and the diff before continuing. You cannot see the limit approaching,
+but you can see that a compaction occurred — build the recovery on the signal that exists.

@@ -1,0 +1,6 @@
+# The checker is vendored byte for byte, and the hooks and manifests are compared across tools; a
+# CRLF checkout would make every copy differ. Consumer repos get their own rule from /ef:ready
+# (`.ef/bin/*.mjs text eol=lf`).
+*.mjs text eol=lf
+*.js  text eol=lf
+*.json text eol=lf

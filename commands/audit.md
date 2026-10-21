@@ -43,5 +43,8 @@ is wrong. Say so, with evidence, rather than complying automatically.
 Do not fix anything as part of this command. Report, triage, then remediate as a separate deliberate
 step — a remediation pass is exactly as fallible as the work it corrects.
 
+Recurring defect classes come back as `## Rulebook proposals` in the report. Apply the accepted ones
+with `/ef:ready grow <path-to-that-report>`.
+
 Record what shipped, what did not, and any accepted gap as an amendment to the RFC and PRD; the
 RFC's header is the only cross-repo delivery status.

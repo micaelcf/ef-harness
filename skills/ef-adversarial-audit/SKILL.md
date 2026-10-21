@@ -45,9 +45,15 @@ inside the session the separation existed to break.
 - **Rationale** comes from `grill-decisions`, which outranks the RFC and PRD wherever they disagree.
 - **Gate results** come pre-verified from the orchestrator, which runs the commands named by the
   repository's `ef-harness` block and hands over the output. Do not re-run them: that spends the
-  budget on what a gate already proved and starves the classes no gate can see.
+  budget on what a gate already proved and starves the classes no gate can see. Where those results
+  include a **passing** `ef-check` `feature` gate, the checklist's structure is settled — unique ids,
+  a proof per check, and, when `## Requirements` exists, every owned requirement cited. Audit whether
+  the checks are **true**, not whether they exist. Without that pass — or without `## Requirements` —
+  walk the structure and the requirement coverage yourself.
 
-Audit against those, never against the implementer's summary.
+Audit against those, never against the implementer's summary. You are read-only: return each round's
+verdict to the orchestrator, which appends it to the checklist's `log.md` (its `## Log` at `single`
+scale), never to the slice files the build reads.
 
 ---
 
@@ -76,8 +82,9 @@ suite. Load that file at the start of this mode.
   data) · `major` (real, with a workaround) · `minor` · `nit`.
 - Report what you **verified as correct** too, with anchors. It tells the reader which ground is
   covered and makes the findings credible.
-- Where the work carries a checklist, **recompute its `Coverage` join rather than reading it** — a
-  join you only read is the author's self-report with a table around it. Take the members from
+- Where the work carries a checklist (`.ef/<feature>/`: the index, every slice file and
+  `verification.md`, read one slice at a time), **recompute its `Coverage` join rather than reading
+  it** — a join you only read is the author's self-report with a table around it. Take the members from
   whatever holds authority over that set, which is not always the code: a set the code is meant to
   *satisfy* has its authority outside it, and recomputing from the code asks the author's output
   whether the author's output is complete.
@@ -88,6 +95,23 @@ suite. Load that file at the start of this mode.
 ### Report only
 
 Fix nothing in this mode. The owner triages.
+
+### Rulebook proposals
+
+A finding that a rule in the repo's rulebook would have prevented **and could recur** — a class, not a
+one-off — earns one more line in the report, under `## Rulebook proposals`:
+
+```text
+<finding id> · <the rule, one sentence> · level <0|1|2> · Check: <the lint, type or test that would
+fail> | none — <why nothing can check it yet>
+```
+
+Prefer level 0: name the check that would have caught it, with the failure message it should print.
+Propose; never edit the rulebook. The owner applies accepted proposals with `/ef:ready grow`, which
+is what keeps a rulebook growing from defects that happened rather than ones somebody imagined.
+
+A finding the rulebook **already** forbids is evidence too: name the rule, and say whether it failed
+because it has no check, because it is at the wrong level, or because the agent never loaded it.
 
 ---
 

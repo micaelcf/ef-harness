@@ -20,8 +20,9 @@ no step-by-step.
 
 - the **requirement identifiers** this repo owns, from the PRD, and `grill-decisions` as the
   rationale authority over the RFC and PRD
-- the **contract** written at the end of Stage 3, in `.ef/<feature>/checks.md`. If it exists only in a
-  conversation, it does not exist: parallel slices cannot read a conversation
+- the **contract** written at the end of Stage 3 — `.ef/<feature>/contract/` (or the `## Contract`
+  section of `checks.md` at `single` scale). If it exists only in a conversation, it does not exist:
+  parallel slices cannot read a conversation
 - an **anchor table** with no unresolved `FICTION`/`CHANGED` on a load-bearing claim
 
 ## Bindings
@@ -31,7 +32,8 @@ skill. Read the `ef-harness` block in the repo's context file; the contract carr
 feature-specific delta.
 
 Where the block is absent, derive the gates from the task runner and the CI workflows, propose them,
-and offer to write the block. **Never invent a command** — a proof that cannot run is worse than no
+and offer to write the block — or run `/ef:ready bootstrap`, which writes it with every gate run
+once and keeps it checked. **Never invent a command** — a proof that cannot run is worse than no
 proof. Prefer a command that already runs in CI.
 
 ## Critical rules
@@ -75,8 +77,14 @@ Raising a sweep item is always free. Growing scope is the user's call.
 
 ### Format
 
-Read `references/checklist-format.md` when you write `.ef/<feature>/checks.md` — after the contract is
-read, the refuse gate is passed and the sweep is walked. Do not load it during the first pass.
+Read `references/checklist-format.md` when you write `.ef/<feature>/` — after the contract is read,
+the refuse gate is passed and the sweep is walked. Do not load it during the first pass. At `single`
+scale the checklist is one file; at `standard` and `multi` it is split by reader — an index, the
+contract by topic, one file per slice — so each builder loads only what it codes against.
+
+Where the repository vendors the checker, run `node .ef/bin/ef-check.mjs` once the checklist is
+written. Its `feature` gate fails a duplicated check id, a check with no proof, an owned requirement
+no check cites, and a slice that reads a contract file that does not exist.
 
 ---
 
@@ -86,7 +94,9 @@ You decide how. Write the tests from the checks, implement, run each proof, comm
 pieces following the repo's commit convention.
 
 Slices run in **parallel**, one agent per ownership set. `references/orchestration.md` holds the
-weighing, the ownership rules and the wave boundary.
+weighing, the ownership rules and the wave boundary. A builder is briefed with **files, not
+paraphrase**: the index, the contract files its slice `Reads:`, and its slice file — nothing else from
+`.ef/<feature>/`.
 
 Two boundaries, about scope rather than care: capability nobody asked for and unrelated refactors are
 not yours to add — surface them and move on. Everything else inside the work at hand is the work: a
@@ -94,9 +104,9 @@ guard clause, a clear error message, a test beyond the proofs when you can say w
 at an edge the checks did not name. Extra tests are welcome and there is no quota.
 
 Doors get discovered while building, and deciding them is yours. Then record: append the row to
-`Landing` with its literal shape and the alternative you rejected, **before the code that closes it
-is written**. The timing is the mechanism — an alternative is only knowable while you are still
-choosing between them. Written at the end it becomes a justification of what you already did.
+`Landing` in `checks.md` with its literal shape and the alternative you rejected, **before the code
+that closes it is written**. The timing is the mechanism — an alternative is only knowable while you
+are still choosing between them. Written at the end it becomes a justification of what you already did.
 
 ---
 

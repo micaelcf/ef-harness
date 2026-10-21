@@ -1,0 +1,12 @@
+{
+  "name": "ef-harness",
+  "private": true,
+  "type": "module",
+  "description": "Not published. Declares the omp extension that runs the rulebook gate after markdown edits.",
+  "omp": {
+    "extensions": ["./hooks/omp-post-edit.js"]
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}

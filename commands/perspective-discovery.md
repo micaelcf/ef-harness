@@ -17,10 +17,11 @@ Three things to be clear about before you start:
 - Those docs are **claims**, not truth. They were written at product altitude, often before the code
   existed, usually by a session that could not see this repository. Your first job is to find where
   they and this repository disagree.
-- The deliverable is **closed decisions and a written contract** — files in `.ef/<feature>/contract/`,
-  one per topic, so each builder later loads only what its slice consumes — not code and not a plan
-  document. Do not implement anything until the grilling is finished and the human says the
-  decisions are closed.
+- The deliverable is **closed decisions and a written contract** — at `standard` and `multi` scale,
+  files in `.ef/<feature>/contract/`, one per topic, so each builder later loads only what its slice
+  consumes; at `single` scale, a `## Contract` section of `.ef/<feature>/checks.md` — not code and
+  not a plan document. Do not implement anything until the grilling is finished and the human says
+  the decisions are closed.
 - A `FICTION` verdict on a load-bearing claim can reopen a **product** decision, not just a local
   one. Escalate it and amend the RFC — do not route around it here, because the sibling repos are
   reading the same false claim.

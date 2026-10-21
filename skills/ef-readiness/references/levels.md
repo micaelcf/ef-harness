@@ -53,7 +53,8 @@ Ask in order. The first yes decides.
 
 - an overview of directories the agent can list itself
 - a rule that a check already enforces with a clear message
-- a rule for one subtree (move it to level 2)
+- a rule for one subtree that fails loudly (move it to level 2, with a trigger); a *silent* trap stays
+  at level 1 whatever its scope
 - a procedure longer than a few lines (a skill)
 - history, dates and "this used to be" (an ADR, or the commit)
 - a second copy of anything; point to the original

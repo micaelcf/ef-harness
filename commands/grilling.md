@@ -16,7 +16,7 @@ shape and the deadlock rules.
 Stage 1  /ef:grilling                 close decisions            grill-decisions
 Stage 2  /ef:feature-docs             author the folder          RFC · PRD · INDEX
 Stage 3  /ef:perspective-discovery    per repo, anchors → grill  the contract
-Stage 4  /ef:implement                per repo, fan-out          .ef/<feature>/ (index · contract/ · slices/)
+Stage 4  /ef:implement                per repo, fan-out          .ef/<feature>/checks.md (+ contract/ · slices/ at standard/multi)
 Stage 5  /ef:audit                    per repo, single gate      the handoff doc
 ```
 

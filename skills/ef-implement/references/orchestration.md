@@ -61,8 +61,9 @@ drift into a paraphrase:
 A builder never loads another slice's file, `verification.md` or `log.md`. Those are for the lead
 and the auditor; loading them is the token cost the split exists to remove.
 
-Per slice: exact files and symbols, explicit non-goals, and the observable outcome it must reach —
-all of which its slice file already states.
+Per slice: the observable outcome it must reach and the files it owns — its slice file states both
+— plus its non-goals: the index's `Out of scope`, and anything slice-specific the lead adds to the
+brief. Exact symbols come from the contract files it reads.
 
 ---
 
@@ -110,10 +111,10 @@ Compaction summarises the **conversation** and chooses for you what to drop. A h
 **artifact**, at a boundary you chose.
 
 So when a slice must hand over: only on green, with the next agent reading the index, its slice
-file and the **diff of what has landed** — never a narrative summary of it. The diff is the state,
-and it carries the hundred reversible choices that sit below the `Landing` bar: naming, error shape,
-where the helper went. Those are exactly what drifts between agents and exactly what no document
-records.
+file, the contract files it `Reads:`, the tail of `log.md` and the **diff of what has landed** —
+never a narrative summary of it. The diff is the state, and it carries the hundred reversible
+choices that sit below the `Landing` bar: naming, error shape, where the helper went. Those are
+exactly what drifts between agents and exactly what no document records.
 
 Then append to `log.md` (the `## Log` section at `single` scale) — not to the next agent's prompt,
 because a briefing written into a prompt survives exactly one boundary:
@@ -124,6 +125,6 @@ because a briefing written into a prompt survives exactly one boundary:
 - **what was abandoned** — tried, discarded, and why. The one thing neither the code nor the
   checklist preserves
 
-**When compaction happens anyway**, re-read the index, your slice file and the diff before
-continuing. You cannot see the limit approaching, but you can see that a compaction occurred — build
-the recovery on the signal that exists.
+**When compaction happens anyway**, re-read the index, your slice file, the contract files it
+`Reads:`, the tail of `log.md` and the diff before continuing. You cannot see the limit approaching,
+but you can see that a compaction occurred — build the recovery on the signal that exists.

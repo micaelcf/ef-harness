@@ -121,7 +121,8 @@ Proof: `<the specific test invocation>`
 Proof: `<the specific test invocation>`
 ```
 
-- `Owns:` is the files this slice alone writes, as code spans. No path appears in two slices.
+- `Owns:` is the files this slice alone writes, as code spans. No path appears in two slices; a glob
+  that overlaps another slice's files is flagged for review.
 - `Reads:` is every contract file this slice codes against, relative to the feature directory.
   Its builder loads these and nothing else from `contract/`.
 - The heading carries the slice's **weight**: `wc -c` of the files it touches, divided by four.
@@ -300,6 +301,11 @@ gitignored. It is an error when:
   file is read by no slice
 - *(split)* one path is owned by two slices, a slice file passes 150 lines, a contract file passes
   200, or the index defines a check
+
+A glob in one slice's `Owns:` that can cover another slice's path (`src/**` against `src/x.ts`) is a
+**warning**: real checklists split a tree on purpose ("everything under `orders/` except
+`review.svelte`"), and the gate cannot read the "except". Make each such split explicit in prose
+beside the `Owns:` lines.
 
 A missing `## Requirements` section is a warning. The edit hook runs the same gate after each write,
 so a broken cross-reference comes back in the turn that made it.

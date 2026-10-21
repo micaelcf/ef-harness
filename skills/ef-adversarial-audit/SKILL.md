@@ -45,12 +45,15 @@ inside the session the separation existed to break.
 - **Rationale** comes from `grill-decisions`, which outranks the RFC and PRD wherever they disagree.
 - **Gate results** come pre-verified from the orchestrator, which runs the commands named by the
   repository's `ef-harness` block and hands over the output. Do not re-run them: that spends the
-  budget on what a gate already proved and starves the classes no gate can see. Where the repo vendors
-  `ef-check`, its `feature` gate already settled the checklist's structure — unique ids, a proof per
-  check, every owned requirement cited. Audit whether the checks are **true**, not whether they exist.
+  budget on what a gate already proved and starves the classes no gate can see. Where those results
+  include a **passing** `ef-check` `feature` gate, the checklist's structure is settled — unique ids,
+  a proof per check, and, when `## Requirements` exists, every owned requirement cited. Audit whether
+  the checks are **true**, not whether they exist. Without that pass — or without `## Requirements` —
+  walk the structure and the requirement coverage yourself.
 
-Audit against those, never against the implementer's summary. Append each round's verdict to the
-checklist's `log.md` (its `## Log` at `single` scale), never to the slice files the build reads.
+Audit against those, never against the implementer's summary. You are read-only: return each round's
+verdict to the orchestrator, which appends it to the checklist's `log.md` (its `## Log` at `single`
+scale), never to the slice files the build reads.
 
 ---
 

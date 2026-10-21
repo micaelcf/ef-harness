@@ -283,12 +283,12 @@ and every feature checklist — into a gate:
 |---|---|
 | `anchors` | a document cites a repo path that does not exist, or a line past the end of a file. Immutable records (`doc docs/adr/  # reason` in `.ef/anchors.allow`) report it as a warning; a rulebook never does |
 | `commands` | the rulebook names a `npm`/`pnpm`/`yarn`/`bun run`, `make` or `just` target that does not exist |
-| `budget` | the always-loaded set — root, pointer and every `@import` — passes 200 lines (warns past 150); a scoped one passes 200 |
+| `budget` | the always-loaded set — root, pointer and its `@import`s, followed four hops deep — passes 200 lines (warns past 150); a scoped one passes 200 |
 | `routing` | a scoped rulebook is not named from the root, so omp would never load it |
 | `checks` | an item under **Invariants** has no `Check:` — or says `Check: none` without a reason |
 | `single-source` | a `CLAUDE.md` beside `AGENTS.md` does not import `@AGENTS.md` — both tools then load only `CLAUDE.md` — or holds rules of its own |
 | `bindings` | the `ef-harness` block is missing, has an unknown key, or a gate does not resolve |
-| `feature` | a `.ef/<feature>/` checklist defines a check id twice, has a check without a proof, an owned requirement no check cites, or — split — a slice the index does not list, a `Reads:` target that does not exist, a contract file nobody reads, a file with two owners |
+| `feature` | a `.ef/<feature>/` checklist defines a check id twice, has a check without a proof, an owned requirement no check cites, or — split — a slice the index does not list, a `Reads:` target that does not exist, a contract file nobody reads, a path with two owners (a glob that only *overlaps* another slice's files is a warning) |
 
 The same checker runs in CI and, through the plugin's hook, **after every markdown edit the agent
 makes** — so a broken citation comes back to the agent in the turn that wrote it. The hook does
@@ -513,7 +513,7 @@ package.json                     not published; declares the omp extension and `
 tests/                           node:test suites — rulebook gates, feature gate + split, hooks
 
 assets/                          README animations + social preview
-.github/workflows/release.yml    tests and version checks on every push; publishes the release on a tag
+.github/workflows/release.yml    tests and version checks on main, tags and PRs; publishes the release on a tag
 CHANGELOG.md                     every release, newest first
 ```
 
@@ -539,6 +539,10 @@ that needs them, never up front.
   each repository that opts in, and one edit hook that runs it. No MCP servers, no model calls, no
   network. Everything else is markdown, and everything the agent does runs under your tool's own
   permission model.
+- **The hook runs repository code — on purpose.** After a markdown edit it runs the repo's own
+  `.ef/bin/ef-check.mjs` with `node`, in a child process, the way the repo's gates run. That is the
+  trust you already extend to a repository's tests; a repo that has not vendored the checker runs
+  nothing. Review changes to `.ef/bin/` like any other executable.
 
 ---
 
@@ -610,10 +614,11 @@ public API above is considered stable.
 5. Commit (`:bookmark: chore(release): vX.Y.Z`) and push `main`.
 6. `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z`
 
-The [release workflow](.github/workflows/release.yml) runs on every push and pull request. It runs
-the tests, and fails if the manifest pairs differ, if the version is not valid SemVer, or if the
-changelog has no entry for it. On a tag it also requires the tag to equal `v` + the manifest
-version, then publishes the GitHub release using that changelog section as the notes.
+The [release workflow](.github/workflows/release.yml) runs on pushes to `main` and `v*` tags, and on
+every pull request. It runs the tests, and fails if the manifest pairs differ, if the version is not
+valid SemVer, or if the changelog has no entry for it. On a tag it also requires the tag to equal
+`v` + the manifest version, then publishes the GitHub release using that changelog section as the
+notes.
 
 Published tags are never moved or deleted; a bad release is fixed with a new PATCH release. The
 repository backs this policy with a ruleset against updating or deleting `v*` tags, and with

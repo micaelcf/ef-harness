@@ -31,8 +31,9 @@ EXTRACT ─────────→ BUILD ─────────→ VERI
 The thinking already happened in Stages 1–3. Lose nothing from it, prove what you build, and hand a
 *whole feature* to Stage 5.
 
-Each builder is briefed with three things and nothing more: the index `.ef/<feature>/checks.md`, the
-contract files its slice names under `Reads:`, and its own `slices/S<n>-*.md`. Run
+At `standard` and `multi` scale each builder is briefed with three things and nothing more: the
+index `.ef/<feature>/checks.md`, the contract files its slice names under `Reads:`, and its own
+`slices/S<n>-*.md`. At `single` scale the one builder gets the one `checks.md`. Run
 `node .ef/bin/ef-check.mjs` after writing the checklist where the repo vendors it.
 
 ## Concrete commands come from the repo

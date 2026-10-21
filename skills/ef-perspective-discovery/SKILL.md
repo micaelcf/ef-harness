@@ -261,5 +261,6 @@ Then `/ef:implement` may begin.
 3. Decisions you took yourself, with evidence.
 4. Closed decisions from the grilling, each with rationale and what it supersedes.
 5. The contract, written to `.ef/<feature>/contract/` (or `checks.md` at `single` scale), with the
-   owned requirement ids in `checks.md` and the anchor table and discovery decisions in `log.md`.
+   owned requirement ids in `checks.md` and the anchor table and discovery decisions in `log.md`
+   (a `## Log` section of `checks.md` at `single` scale — never a second file there).
 6. Any amendment the anchor check owes the RFC.

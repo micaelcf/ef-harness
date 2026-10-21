@@ -27,13 +27,15 @@ All notable changes to EF Harness are documented here. The format follows
   reason; an entry ending in `/` covers a deleted tree. `doc <path>  # reason` marks immutable
   records (ADRs, closed feature docs) whose stale citations are reported as warnings; a rulebook is
   never a record.
-- `.gitattributes` pins `*.mjs`/`*.js`/`*.json` to LF, so the vendored checker is byte-identical on
-  every platform.
+- `.gitattributes` pins `*.mjs`, `*.js` and `*.json` to LF in the harness, so the checker, the
+  hooks and the twin manifests are byte-identical on every platform; `/ef:ready` adds
+  `.ef/bin/*.mjs text eol=lf` to the consumer repo for the vendored copy.
 - Optional bindings key `rulebook-budget:` (`root <warn>/<fail>, scoped <fail> — <reason>`).
 - **Edit-triggered rulebook hook** for both tools — a Claude Code `PostToolUse` hook
   (`hooks/hooks.json`) and an omp extension (`package.json#omp.extensions`) — that runs the
-  repository's vendored checker on each markdown file the agent writes and returns the findings in
-  the same turn. It does nothing in a repository that has not vendored the checker.
+  repository's vendored checker, with `node` in a child process, on each markdown file the agent
+  writes and returns the findings in the same turn; a checker that cannot run is reported, not
+  swallowed. It does nothing in a repository that has not vendored the checker.
 - Stage 5 reports `## Rulebook proposals` for defect classes that could recur, each with its level
   and `Check:`, for `/ef:ready grow` to apply.
 - **`feature` gate** in `ef-check`, over every `.ef/<feature>/` (read from disk, so a gitignored
@@ -42,7 +44,8 @@ All notable changes to EF Harness are documented here. The format follows
   by a check, and a check cites no unlisted id with an owned prefix. In the split layout it also
   requires the index and `slices/` to agree, an `Owns:` and a `Reads:` line on every slice, every
   `Reads:` target to exist, every contract file to have a reader, no path owned by two slices, slice
-  files under 150 lines and contract files under 200.
+  files under 150 lines and contract files under 200. A glob that overlaps another slice's files is
+  a warning, because real checklists split a tree on purpose.
 - `ef-check --split .ef/<feature>`: deterministic migration of a one-file checklist to the split
   layout. A contract heading naming slices in parentheses (`Schema (S0)`) is read by those slices
   only; every other contract file by every slice.

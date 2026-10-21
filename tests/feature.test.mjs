@@ -156,6 +156,32 @@ describe('feature gate: split layout', () => {
 	});
 });
 
+describe('feature gate: overlapping ownership', () => {
+	test('a glob that can cover another slice\'s files is a warning; disjoint trees are not', () => {
+		const { errors, warns } = feature(
+			splitFiles({
+				[`${F}/slices/S1-ui.md`]: ['# S1', '', 'Owns: `src/ui/**`, `src/**/*.css`, `src/db/*.svelte`', 'Reads: contract/shared.md', '', checkLine(2, 'RF-002 screen')].join('\n')
+			})
+		);
+		assert.deepEqual(errors, []);
+		assert.deepEqual(
+			warns.map((f) => f.message.split(' overlaps ')[0]),
+			['src/**/*.css', 'src/db/*.svelte']
+		);
+	});
+});
+
+describe('anchors: line ranges', () => {
+	test('line 0 and a range that ends before it starts are errors', () => {
+		const root = repo({ 'AGENTS.md': rulebook({ extra: '`src/a.ts:0`, `src/a.ts:3-1` and `src/a.ts:2-3`' }), 'src/a.ts': 'a\nb\nc\n' });
+		const found = check({ root }).findings.filter((f) => f.gate === 'anchors');
+		assert.deepEqual(
+			found.map((f) => f.message.split(',')[0]),
+			['cites src/a.ts:0', 'cites src/a.ts:3-1']
+		);
+	});
+});
+
 describe('splitting a single-file checklist', () => {
 	const original = [
 		'# Demo — repo',
@@ -299,12 +325,27 @@ describe('splitting a single-file checklist', () => {
 		const dir = join(root, F);
 		const out = splitChecklist(dir);
 		assert.equal(readFileSync(join(dir, 'checks.md.orig'), 'utf8'), odd);
-		const everything = out.written.map((rel) => readFileSync(join(dir, rel), 'utf8')).join('\n');
+		// Exact trimmed lines, counted: a dropped closing fence must not hide behind the opening one.
+		const pool = out.written.flatMap((rel) => readFileSync(join(dir, rel), 'utf8').split('\n').map((l) => l.trim()));
+		const takeLine = (line) => {
+			const at = pool.indexOf(line);
+			if (at === -1) return false;
+			pool.splice(at, 1);
+			return true;
+		};
 		for (const line of odd.split('\n').map((l) => l.trim()).filter(Boolean)) {
 			if (/^## (Contract|Checks|Ownership)$/.test(line) || /^\|[-|]+\|$/.test(line) || line === '| Slice | Files this slice alone writes |') continue;
-			const asTitle = line.replace(/^### /, '# ');
-			const asOwns = line === '| S0 schema | `src/db/**` |' ? 'Owns: `src/db/**`' : line;
-			assert.ok(everything.includes(line) || everything.includes(asTitle) || everything.includes(asOwns), `dropped: ${line}`);
+			const forms = [line, line.replace(/^### /, '# '), line === '| S0 schema | `src/db/**` |' ? 'Owns: `src/db/**`' : line];
+			assert.ok(forms.some(takeLine), `dropped: ${line}`);
+		}
+	});
+
+	test('refuses to overwrite an existing verification.md, log.md or backup', () => {
+		for (const name of ['verification.md', 'log.md', 'checks.md.orig']) {
+			const root = repo({ [`${F}/checks.md`]: original, [`${F}/${name}`]: 'mine\n' });
+			assert.throws(() => splitChecklist(join(root, F)), /already exists/);
+			assert.equal(readFileSync(join(root, F, name), 'utf8'), 'mine\n');
+			assert.equal(readFileSync(join(root, F, 'checks.md'), 'utf8'), original);
 		}
 	});
 });

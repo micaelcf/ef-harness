@@ -37,9 +37,10 @@ gate so the result can't quietly rot.
 ## Vendor the checker (every mode, first)
 
 Copy `scripts/ef-check.mjs` from this skill to `.ef/bin/ef-check.mjs` in the repository,
-**byte for byte**. If a copy exists, compare its `VERSION` with this skill's. If they differ,
-replace it and say so. Never patch the vendored copy: every repo runs the same gates the harness
-documents.
+**byte for byte**, and make sure the repo's `.gitattributes` holds `.ef/bin/*.mjs text eol=lf`, so a
+CRLF checkout never makes one copy differ from another. If a copy exists, compare its `VERSION` with
+this skill's. If they differ, replace it and say so. Never patch the vendored copy: every repo runs
+the same gates the harness documents.
 
 Vendoring is also the opt-in. The plugin's edit hook runs only in a repo that has the vendored
 checker. From then on, every markdown edit the agent makes is checked against that copy, the same

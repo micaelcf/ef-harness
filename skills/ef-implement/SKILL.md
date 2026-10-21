@@ -32,9 +32,9 @@ skill. Read the `ef-harness` block in the repo's context file; the contract carr
 feature-specific delta.
 
 Where the block is absent, derive the gates from the task runner and the CI workflows, propose them,
-and offer to write the block — or run `/ef:ready`, which writes it with every gate verified once and
-keeps it checked. **Never invent a command** — a proof that cannot run is worse than no proof. Prefer
-a command that already runs in CI.
+and offer to write the block — or run `/ef:ready bootstrap`, which writes it with every gate run
+once and keeps it checked. **Never invent a command** — a proof that cannot run is worse than no
+proof. Prefer a command that already runs in CI.
 
 ## Critical rules
 

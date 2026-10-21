@@ -477,6 +477,8 @@ function gateAnchors(index, mdFiles, rulebooks, findings, stats) {
 				}
 				if (!verdict.found) {
 					report(i + 1, `cites ${cited.raw}, which does not exist. Fix the citation, or add it to ${ALLOW_FILE} with a reason if the document cites it as gone.`);
+				} else if (cited.line !== null && (cited.line < 1 || (cited.lineEnd !== null && cited.lineEnd < cited.line))) {
+					report(i + 1, `cites ${cited.raw}, which is not a line range: lines start at 1 and a range ends after it starts.`);
 				} else if (cited.line !== null && index.files.has(verdict.found)) {
 					const total = linesOf(verdict.found);
 					const last = cited.lineEnd ?? cited.line;
@@ -882,6 +884,50 @@ function gateBindings(index, rootScope, findings, stats) {
 	return budget;
 }
 
+function globRegex(pattern) {
+	let out = '';
+	for (let i = 0; i < pattern.length; i += 1) {
+		const ch = pattern[i];
+		if (pattern.startsWith('**/', i)) {
+			out += '(?:.*/)?';
+			i += 2;
+		} else if (pattern.startsWith('**', i)) {
+			out += '.*';
+			i += 1;
+		} else if (ch === '*') out += '[^/]*';
+		else if (ch === '{') {
+			const close = pattern.indexOf('}', i);
+			if (close === -1) out += '\\{';
+			else {
+				out += `(?:${pattern
+					.slice(i + 1, close)
+					.split(',')
+					.map((s) => s.replace(/[.+?^$()|[\]\\]/g, '\\$&'))
+					.join('|')})`;
+				i = close;
+			}
+		} else out += ch.replace(/[.+?^$()|[\]\\]/g, '\\$&');
+	}
+	return new RegExp(`^${out}$`);
+}
+
+const isGlob = (p) => /[*{]/.test(p);
+
+/** Whether two `Owns:` entries can name the same file. Exact duplicates are handled separately. */
+export function ownershipOverlaps(a, b) {
+	const norm = (p) => (p.endsWith('/') ? `${p}**` : p);
+	const [x, y] = [norm(a), norm(b)];
+	if (!isGlob(x) && !isGlob(y)) return false;
+	if (!isGlob(x)) return globRegex(y).test(x);
+	if (!isGlob(y)) return globRegex(x).test(y);
+	const prefix = (p) => p.slice(0, p.search(/[*{]/));
+	const [px, py] = [prefix(x), prefix(y)];
+	// The glob with the shorter literal prefix covers the other only if it recurses from there.
+	if (px.startsWith(py) && y.slice(py.length).startsWith('**')) return true;
+	if (py.startsWith(px) && x.slice(px.length).startsWith('**')) return true;
+	return false;
+}
+
 // ---------------------------------------------------------------------------------------------
 // Feature checklists: .ef/<feature>/ (format: the ef-implement skill's references/checklist-format.md)
 
@@ -1025,6 +1071,7 @@ function gateFeatures(index, findings, stats) {
 		// Owns: and Reads: on every slice; Reads targets exist; every contract file has a reader; no path owned twice.
 		const readers = new Map(contract.map((c) => [c, 0]));
 		const owners = new Map();
+		const claims = [];
 		for (const s of slices) {
 			const owns = lineOf(index, s, /^\s*Owns\s*:/);
 			const reads = lineOf(index, s, /^\s*Reads\s*:/);
@@ -1036,6 +1083,7 @@ function gateFeatures(index, findings, stats) {
 					if (owners.has(p) && owners.get(p) !== s)
 						findings.push(finding('error', 'feature', s, owns.line, `${p} is also owned by ${owners.get(p)}. One owner per file; name an integration owner for a shared one.`));
 					else owners.set(p, s);
+					claims.push({ path: p, slice: s, line: owns.line });
 				}
 			}
 			if (!reads) findings.push(finding('error', 'feature', s, 1, 'no "Reads:" line. Name the contract files this slice codes against.'));
@@ -1052,6 +1100,15 @@ function gateFeatures(index, findings, stats) {
 			if (lines > FEATURE_BUDGET.slice)
 				findings.push(finding('error', 'feature', s, 1, `${lines} lines; a slice file stays under ${FEATURE_BUDGET.slice}. A slice this big was cut too coarsely: re-cut it in the contract.`));
 		}
+		for (let a = 0; a < claims.length; a += 1)
+			for (let b = a + 1; b < claims.length; b += 1) {
+				const x = claims[a];
+				const y = claims[b];
+				if (x.slice === y.slice || x.path === y.path || !ownershipOverlaps(x.path, y.path)) continue;
+				findings.push(
+					finding('warn', 'feature', y.slice, y.line, `${y.path} overlaps ${x.path}, owned by ${x.slice}. If the split is deliberate, say which files each side owns; two writers on one file is a merge conflict with a schedule.`)
+				);
+			}
 		for (const [c, n] of readers) {
 			if (n === 0) findings.push(finding('error', 'feature', c, 1, 'no slice reads this contract file. It is dead weight, or a slice forgot it in "Reads:".'));
 			const lines = lineCount(index, c);
@@ -1110,6 +1167,8 @@ export function splitChecklist(featureDir) {
 	const indexPath = join(dir, 'checks.md');
 	if (!existsSync(indexPath)) throw new Error(`${indexPath} does not exist`);
 	if (existsSync(join(dir, 'slices')) || existsSync(join(dir, 'contract'))) throw new Error(`${dir} is already split`);
+	for (const name of ['checks.md.orig', 'verification.md', 'log.md'])
+		if (existsSync(join(dir, name))) throw new Error(`${join(dir, name)} already exists; the split would overwrite it. Move it aside first.`);
 	const before = readFileSync(indexPath, 'utf8');
 	const sections = splitBy(parseMarkdown(before), 2);
 	const text = (lines) => lines.map((l) => l.text);

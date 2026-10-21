@@ -39,9 +39,10 @@ target. Each one is resolved against the citing document's directory and against
   and never fail: `owner/repo#12`, `@scope/pkg/sub`, `#alias/*`, `/route/path`, and paths in another
   repository. The limitation is that a citation whose whole top-level directory was deleted is no
   longer seen as a claim about this repo.
-- **Line suffixes.** `path:42`, `path:42-60` and `#L42` must point inside the file.
-- **Skipped shapes.** Tokens containing `*`, `<`, `>`, `{`, `}`, `$` or `://` are skipped. Globs and
-  placeholders are patterns, not files.
+- **Line suffixes.** `path:42`, `path:42-60` and `#L42` must point inside the file. Line `0`, or a
+  range that ends before it starts, is an error too.
+- **Skipped shapes.** Tokens containing `*`, `<`, `>`, `{`, `}`, `$`, `|`, `\`, `//` or `://` are
+  skipped. Globs, placeholders and escapes are patterns, not files.
 - **`.ef/anchors.allow`.** It holds one entry per line: `path  # reason`. An entry ending in `/`
   covers that directory and every path cited under it, which suits a tree an ADR deleted whole.
   An entry without a reason is an `error`. An entry that is never cited, or whose path exists

@@ -5,10 +5,14 @@
 // Without it the hook does nothing, so installing the plugin never changes behaviour in a repo that
 // has not asked for the gates. The hook runs the vendored copy, not the plugin's, so the agent is
 // held to exactly the verdict CI will reach.
+//
+// Trust boundary: the vendored checker is repository code, run with `node` the way the repo's own
+// gates are. It runs in a child process — never inside the agent host — and is read fresh on every
+// edit, so a copy /ef:ready just replaced is the copy that runs.
 
+import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { pathToFileURL } from 'node:url';
 
 export const VENDORED = join('.ef', 'bin', 'ef-check.mjs');
 
@@ -23,9 +27,25 @@ export function findOptedInRoot(start) {
 	}
 }
 
+function runChecker(root, only) {
+	const run = spawnSync('node', [join(root, VENDORED), '--root', root, '--json', '--only', only.join(',')], {
+		encoding: 'utf8',
+		timeout: 20_000,
+		windowsHide: true
+	});
+	if (run.error) throw new Error(`could not run node ${VENDORED}: ${run.error.message}`);
+	try {
+		return JSON.parse(run.stdout);
+	} catch {
+		const lines = (run.stderr || run.stdout || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+		const why = lines.find((l) => /\b\w*Error\b:/.test(l)) ?? lines[0] ?? 'no output';
+		throw new Error(`node ${VENDORED.split(sep).join('/')} exited ${run.status} without a report: ${why}`);
+	}
+}
+
 /**
  * `editedPaths`: absolute, or relative to `cwd`. Returns null when there is nothing to say, else
- * `{ errors, warnings, text }`.
+ * `{ errors, warnings, text }`. Throws when the checker cannot run; the adapters report that too.
  */
 export async function rulebookFeedback(cwd, editedPaths) {
 	const absolute = editedPaths.filter((p) => typeof p === 'string' && p !== '').map((p) => (isAbsolute(p) ? p : resolve(cwd, p)));
@@ -41,8 +61,7 @@ export async function rulebookFeedback(cwd, editedPaths) {
 		.map((r) => r.split(sep).join('/'));
 	if (only.length === 0) return null;
 
-	const checker = await import(pathToFileURL(join(root, VENDORED)).href);
-	const result = checker.check({ root, only });
+	const result = runChecker(root, only);
 	const errors = result.findings.filter((f) => f.level === 'error');
 	const warnings = result.findings.filter((f) => f.level === 'warn');
 	if (errors.length === 0 && warnings.length === 0) return null;

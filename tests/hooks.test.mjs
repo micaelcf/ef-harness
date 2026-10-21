@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { after, describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -92,5 +92,30 @@ describe('omp extension', () => {
 		const run = handler();
 		assert.equal(await run({ toolName: 'edit', isError: true, input: { path: 'docs/guide.md' } }, { cwd: root }), undefined);
 		assert.equal(await run({ toolName: 'read', isError: false, input: { path: 'docs/guide.md' } }, { cwd: root }), undefined);
+	});
+
+	test('reads the edited path from file_path and paths as well as path', async () => {
+		const root = repo({ 'docs/a.md': 'See `src/gone.ts`.\n', 'docs/b.md': 'See `src/lost.ts`.\n', 'src/a.ts': '' });
+		const run = handler();
+		const one = await run({ toolName: 'write', isError: false, input: { file_path: join(root, 'docs', 'a.md') } }, { cwd: root });
+		assert.match(one.additionalContext, /docs\/a\.md:1 \[anchors\]/);
+		const many = await run({ toolName: 'edit', isError: false, input: { paths: ['docs/b.md'] } }, { cwd: root });
+		assert.match(many.additionalContext, /docs\/b\.md:1 \[anchors\].*src\/lost\.ts/);
+	});
+
+	test('reports a checker that cannot run instead of staying silent', async () => {
+		const root = repo({ 'docs/a.md': 'Text.\n' });
+		writeFileSync(join(root, '.ef', 'bin', 'ef-check.mjs'), "throw new Error('boom');\n");
+		const out = await handler()({ toolName: 'edit', isError: false, input: { path: 'docs/a.md' } }, { cwd: root });
+		assert.match(out.additionalContext, /ef rulebook hook failed: .*exited 1 without a report.*boom/);
+	});
+});
+
+describe('Claude Code hook when the checker breaks', () => {
+	test('passes the failure to the agent as context and exits 0', () => {
+		const root = repo({ 'docs/a.md': 'Text.\n' });
+		writeFileSync(join(root, '.ef', 'bin', 'ef-check.mjs'), "throw new Error('boom');\n");
+		const out = claude(root, join(root, 'docs', 'a.md'));
+		assert.match(out.hookSpecificOutput.additionalContext, /ef rulebook hook failed: .*boom/);
 	});
 });

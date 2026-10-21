@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "ef",
   "displayName": "EF Harness",
-  "version": "0.1.0",
-  "description": "Five-stage, repo-agnostic feature pipeline: grill the decisions, author RFC/PRD, discover per repo, build against named proofs, then one adversarial audit gate.",
+  "version": "0.2.0",
+  "description": "Five-stage, repo-agnostic feature pipeline: grill the decisions, author RFC/PRD, discover per repo, build against named proofs, then one adversarial audit gate. Plus /ef:ready: a deterministic gate that keeps the agent rulebook small and true.",
   "author": {
     "name": "Micael Fernandes",
     "url": "https://github.com/micaelcf"

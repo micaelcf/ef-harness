@@ -7,6 +7,11 @@ All notable changes to EF Harness are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-21
+
+`/ef:ready` turns a repository's agent rulebook into a deterministic gate, and feature checklists
+are split by reader so each parallel builder loads only what it codes against.
+
 ### Added
 
 - `/ef:ready` (`ef-readiness`): makes a repository's agent rulebook verifiable, once per repo.
@@ -20,9 +25,10 @@ All notable changes to EF Harness are documented here. The format follows
   always-loaded set, imports included, warns past 150 lines and fails past 200; scoped rulebooks
   fail past 200), `routing` (every scoped rulebook is named from the root), `checks` (every
   invariant states its `Check:` or an honest `Check: none — <reason>`), `single-source` (a
-  `CLAUDE.md` beside `AGENTS.md` imports `@AGENTS.md` and holds no rules of its own) and `bindings`
-  (the `ef-harness` block exists, has known keys, and its gates resolve). Exit `0` / `1` / `2`;
-  `--json` and `--only` for tools.
+  `CLAUDE.md` beside `AGENTS.md` imports `@AGENTS.md` and holds no rules of its own — every such
+  pointer, since omp keeps only one per scope) and `bindings` (the `ef-harness` block exists, has
+  known keys, and its gates resolve). Exit `0` / `1` / `2`; `--json` and a repeatable `--only <file>`
+  for tools.
 - `.ef/anchors.allow`: paths cited because they were deleted on purpose, each with a required
   reason; an entry ending in `/` covers a deleted tree. `doc <path>  # reason` marks immutable
   records (ADRs, closed feature docs) whose stale citations are reported as warnings; a rulebook is
@@ -33,9 +39,10 @@ All notable changes to EF Harness are documented here. The format follows
 - Optional bindings key `rulebook-budget:` (`root <warn>/<fail>, scoped <fail> — <reason>`).
 - **Edit-triggered rulebook hook** for both tools — a Claude Code `PostToolUse` hook
   (`hooks/hooks.json`) and an omp extension (`package.json#omp.extensions`) — that runs the
-  repository's vendored checker, with `node` in a child process, on each markdown file the agent
-  writes and returns the findings in the same turn; a checker that cannot run is reported, not
-  swallowed. It does nothing in a repository that has not vendored the checker.
+  repository's vendored checker in a child process (the running Node under Claude Code; `node`, then
+  `bun`, from PATH under omp) on each markdown file the agent writes and returns the findings in the
+  same turn; a checker that cannot run is reported, not swallowed. It does nothing in a repository
+  that has not vendored the checker.
 - Stage 5 reports `## Rulebook proposals` for defect classes that could recur, each with its level
   and `Check:`, for `/ef:ready grow` to apply.
 - **`feature` gate** in `ef-check`, over every `.ef/<feature>/` (read from disk, so a gitignored
@@ -45,7 +52,8 @@ All notable changes to EF Harness are documented here. The format follows
   requires the index and `slices/` to agree, an `Owns:` and a `Reads:` line on every slice, every
   `Reads:` target to exist, every contract file to have a reader, no path owned by two slices, slice
   files under 150 lines and contract files under 200. A glob that overlaps another slice's files is
-  a warning, because real checklists split a tree on purpose.
+  a warning, because real checklists split a tree on purpose; an `Except:` line in the slice with the
+  wider glob marks the split as deliberate and silences it.
 - `ef-check --split .ef/<feature>`: deterministic migration of a one-file checklist to the split
   layout. A contract heading naming slices in parentheses (`Schema (S0)`) is read by those slices
   only; every other contract file by every slice.
@@ -72,6 +80,7 @@ All notable changes to EF Harness are documented here. The format follows
   `node .ef/bin/ef-check.mjs --split .ef/<feature>`, review the generated `Reads:` lines, and add
   `## Requirements`; finished features need no migration. The split writes nothing unless every
   non-blank line of the original is found in its output, and keeps the original as `checks.md.orig`.
+- The release steps go through a pull request, as `main`'s ruleset requires.
 
 ## [0.1.0] - 2026-10-02
 
@@ -106,5 +115,6 @@ First public release.
 - Packaging as a **Claude Code plugin and an omp plugin** from the same tree (`ef@ef-harness`).
 - README with pipeline diagrams and animations, MIT license and security policy.
 
-[Unreleased]: https://github.com/micaelcf/ef-harness/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/micaelcf/ef-harness/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/micaelcf/ef-harness/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/micaelcf/ef-harness/releases/tag/v0.1.0

@@ -17,6 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Checker and hook tests
+        run: node --test tests/*.test.mjs
+
       - name: Claude Code and omp manifests are identical
         run: diff -r .claude-plugin .omp-plugin
 

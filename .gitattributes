@@ -1,0 +1,4 @@
+# The checker is vendored byte for byte; a CRLF checkout would make every copy differ.
+*.mjs text eol=lf
+*.js  text eol=lf
+*.json text eol=lf

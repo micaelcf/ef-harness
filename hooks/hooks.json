@@ -1,0 +1,17 @@
+{
+  "description": "EF Harness rulebook gate: after a markdown edit, run the repository's vendored .ef/bin/ef-check.mjs on that file. Does nothing in a repository that has not vendored the checker.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}\"/hooks/claude-post-edit.mjs",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

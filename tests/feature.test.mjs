@@ -186,6 +186,14 @@ describe('feature gate: deliberate splits', () => {
 		assert.deepEqual(feature(base([...wide, 'Except: `src/orders/review.svelte`'], narrow)).warns, []);
 		assert.deepEqual(feature(base(narrow, [...wide, 'Except: `src/orders/*.svelte`'])).warns, []);
 	});
+
+	test('an Except: inside a fenced example is not a directive', () => {
+		const files = splitFiles({
+			[`${F}/slices/S0-schema.md`]: ['# S0', '', 'Owns: `src/orders/**`', 'Reads: contract/shared.md, contract/schema.md', '', '```markdown', 'Except: `src/orders/review.svelte`', '```', '', checkLine(1, 'RF-001 tables')].join('\n'),
+			[`${F}/slices/S1-ui.md`]: ['# S1', '', 'Owns: `src/orders/review.svelte`', 'Reads: contract/shared.md', '', checkLine(2, 'RF-002 screen')].join('\n')
+		});
+		assert.equal(feature(files).warns.length, 1);
+	});
 });
 
 describe('split migration guards', () => {

@@ -1002,9 +1002,11 @@ function checkRefs(index, rel) {
 	return refs;
 }
 
+/** The first line matching `pattern` outside fenced code, so an illustrative example is never metadata. */
 function lineOf(index, rel, pattern) {
-	const at = splitLines(readText(index, rel)).findIndex((l) => pattern.test(l));
-	return at === -1 ? null : { line: at + 1, text: splitLines(readText(index, rel))[at] };
+	const lines = parseMarkdown(readText(index, rel));
+	const at = lines.findIndex((l) => l.fence === null && !l.marker && pattern.test(l.text));
+	return at === -1 ? null : { line: at + 1, text: lines[at].text };
 }
 
 function gateFeatures(index, findings, stats) {

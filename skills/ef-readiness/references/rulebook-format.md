@@ -119,7 +119,9 @@ are judged by the audit, not the checker.
 
 Where `CLAUDE.md` sits beside `AGENTS.md`:
 
-- it must import `@AGENTS.md` (`error`: otherwise neither tool loads the rulebook)
+- it must import `@AGENTS.md` (`error`: otherwise neither tool loads the rulebook). Where both
+  `CLAUDE.md` and `.claude/CLAUDE.md` exist, **each** must: omp keeps only one file per scope, and
+  it may be the one without the import
 - it must not hold an Invariants section or an `ef-harness` block (`error`: two rulebooks, and the
   one you aren't reading is the wrong one)
 - more than 20 non-blank lines of its own is a `warn`

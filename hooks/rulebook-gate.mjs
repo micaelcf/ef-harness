@@ -6,15 +6,16 @@
 // has not asked for the gates. The hook runs the vendored copy, not the plugin's, so the agent is
 // held to exactly the verdict CI will reach.
 //
-// Trust boundary: the vendored checker is repository code, run with `node` the way the repo's own
-// gates are. It runs in a child process — never inside the agent host — and is read fresh on every
-// edit, so a copy /ef:ready just replaced is the copy that runs.
+// Trust boundary: the vendored checker is repository code, run the way the repo's own gates run. It
+// runs in a child process — never inside the agent host — and is read fresh on every edit, so a copy
+// /ef:ready just replaced is the copy that runs.
 
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 
 export const VENDORED = join('.ef', 'bin', 'ef-check.mjs');
+const SHOWN = VENDORED.split(sep).join('/');
 
 /** The nearest directory at or above `start` that has vendored the checker, or null. */
 export function findOptedInRoot(start) {
@@ -27,23 +28,30 @@ export function findOptedInRoot(start) {
 	}
 }
 
-// Under Node (Claude Code) reuse the running binary; under omp the host is not Node, so use `node`
-// from PATH — the same binary the repo's gates and CI already need for the vendored checker.
-const NODE = process.versions.bun === undefined ? process.execPath : 'node';
+/**
+ * Runtimes to try, in order. Under Node (Claude Code) the running binary; under omp the host is a
+ * compiled Bun runtime whose execPath would relaunch omp itself, so `node`, then `bun`, from PATH.
+ */
+export function runtimeCandidates() {
+	return process.versions.bun === undefined ? [process.execPath] : ['node', 'bun'];
+}
 
-function runChecker(root, only) {
-	const run = spawnSync(NODE, [join(root, VENDORED), '--root', root, '--json', ...only.flatMap((f) => ['--only', f])], {
-		encoding: 'utf8',
-		timeout: 20_000,
-		windowsHide: true
-	});
-	if (run.error) throw new Error(`could not run node ${VENDORED}: ${run.error.message}`);
+function runChecker(root, only, runtimes) {
+	const args = [join(root, VENDORED), '--root', root, '--json', ...only.flatMap((f) => ['--only', f])];
+	let run = null;
+	for (const bin of runtimes) {
+		run = spawnSync(bin, args, { encoding: 'utf8', timeout: 20_000, windowsHide: true });
+		if (run.error?.code !== 'ENOENT') break;
+	}
+	if (run === null || run.error?.code === 'ENOENT')
+		throw new Error(`found none of ${runtimes.join(', ')} on PATH; install Node 18 or later to enable the rulebook hook`);
+	if (run.error) throw new Error(`could not run ${SHOWN}: ${run.error.message}`);
 	try {
 		return JSON.parse(run.stdout);
 	} catch {
 		const lines = (run.stderr || run.stdout || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
 		const why = lines.find((l) => /\b\w*Error\b:/.test(l)) ?? lines[0] ?? 'no output';
-		throw new Error(`node ${VENDORED.split(sep).join('/')} exited ${run.status} without a report: ${why}`);
+		throw new Error(`${SHOWN} exited ${run.status} without a report: ${why}`);
 	}
 }
 
@@ -51,7 +59,7 @@ function runChecker(root, only) {
  * `editedPaths`: absolute, or relative to `cwd`. Returns null when there is nothing to say, else
  * `{ errors, warnings, text }`. Throws when the checker cannot run; the adapters report that too.
  */
-export async function rulebookFeedback(cwd, editedPaths) {
+export async function rulebookFeedback(cwd, editedPaths, { runtimes = runtimeCandidates() } = {}) {
 	const absolute = editedPaths.filter((p) => typeof p === 'string' && p !== '').map((p) => (isAbsolute(p) ? p : resolve(cwd, p)));
 	const markdown = absolute.filter((p) => p.toLowerCase().endsWith('.md'));
 	if (markdown.length === 0) return null;
@@ -65,14 +73,14 @@ export async function rulebookFeedback(cwd, editedPaths) {
 		.map((r) => r.split(sep).join('/'));
 	if (only.length === 0) return null;
 
-	const result = runChecker(root, only);
+	const result = runChecker(root, only, runtimes);
 	const errors = result.findings.filter((f) => f.level === 'error');
 	const warnings = result.findings.filter((f) => f.level === 'warn');
 	if (errors.length === 0 && warnings.length === 0) return null;
 
 	const lines = [
 		errors.length > 0
-			? `ef-check: ${errors.length} rulebook error${errors.length > 1 ? 's' : ''} in what you just wrote. CI runs the same check (node ${VENDORED.split(sep).join('/')}); fix ${errors.length > 1 ? 'them' : 'it'} now.`
+			? `ef-check: ${errors.length} rulebook error${errors.length > 1 ? 's' : ''} in what you just wrote. CI runs the same check (node ${SHOWN}); fix ${errors.length > 1 ? 'them' : 'it'} now.`
 			: `ef-check: ${warnings.length} rulebook warning${warnings.length > 1 ? 's' : ''} in what you just wrote.`
 	];
 	for (const f of [...errors, ...warnings]) lines.push(`- ${f.level} ${f.file}:${f.line} [${f.gate}] ${f.message}`);

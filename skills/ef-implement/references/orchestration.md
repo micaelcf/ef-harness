@@ -59,7 +59,9 @@ drift into a paraphrase:
   newest file to copy for this kind of unit
 
 A builder never loads another slice's file, `verification.md` or `log.md`. Those are for the lead
-and the auditor; loading them is the token cost the split exists to remove.
+and the auditor; loading them is the token cost the split exists to remove. The one exception is a
+builder resuming a slice after a handoff or a compaction: it reads only the `log.md` entries since
+that slice's last green boundary.
 
 Per slice: the observable outcome it must reach and the files it owns — its slice file states both
 — plus its non-goals: the index's `Out of scope`, and anything slice-specific the lead adds to the

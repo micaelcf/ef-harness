@@ -6,6 +6,7 @@ import { after, describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import ompExtension from '../hooks/omp-post-edit.js';
+import { rulebookFeedback } from '../hooks/rulebook-gate.mjs';
 import { CHECKER, makeRepo, pkg, removeRepo, rulebook } from './helpers.mjs';
 
 const CLAUDE_HOOK = fileURLToPath(new URL('../hooks/claude-post-edit.mjs', import.meta.url));
@@ -115,6 +116,19 @@ describe('omp extension', () => {
 		writeFileSync(join(root, '.ef', 'bin', 'ef-check.mjs'), "throw new Error('boom');\n");
 		const out = await handler()({ toolName: 'edit', isError: false, input: { path: 'docs/a.md' } }, { cwd: root });
 		assert.match(out.additionalContext, /ef rulebook hook failed: .*exited 1 without a report.*boom/);
+	});
+});
+
+describe('choosing a runtime for the checker', () => {
+	test('skips a runtime that is not installed and uses the next one', async () => {
+		const root = repo({ 'docs/a.md': 'See `src/gone.ts`.\n', 'src/a.ts': '' });
+		const out = await rulebookFeedback(root, ['docs/a.md'], { runtimes: ['ef-no-such-runtime', process.execPath] });
+		assert.equal(out.errors, 1);
+	});
+
+	test('says what to install when no runtime is found', async () => {
+		const root = repo({ 'docs/a.md': 'Text.\n' });
+		await assert.rejects(rulebookFeedback(root, ['docs/a.md'], { runtimes: ['ef-no-such-runtime'] }), /install Node 18 or later/);
 	});
 });
 

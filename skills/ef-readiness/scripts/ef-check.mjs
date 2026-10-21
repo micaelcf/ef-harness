@@ -775,15 +775,19 @@ function gateSingleSource(index, scopes, findings, stats) {
 			if (own > POINTER_OWN_LINES_WARN)
 				findings.push(finding('warn', 'single-source', pointer, 1, `carries ${own} lines of its own beside ${scope.primary}; a pointer should carry the import and little else.`));
 		}
-		if (importing.length === 0) {
+		// Every pointer, not just one: omp keeps only one file per scope, and it may be the one
+		// without the import.
+		for (const pointer of scope.pointers) {
+			if (importing.includes(pointer)) continue;
 			const target = baseName(scope.primary);
+			const others = scope.pointers.length > 1 ? ' Each pointer needs it: omp loads only one of them, and it may be this one.' : '';
 			findings.push(
 				finding(
 					'error',
 					'single-source',
-					scope.pointers[0],
+					pointer,
 					1,
-					`sits beside ${scope.primary} but does not import it. Claude Code and omp both load only CLAUDE.md when both exist, so ${scope.primary} never loads. Add a line reading "@${scope.pointers[0] === '.claude/CLAUDE.md' ? `../${target}` : target}".`
+					`sits beside ${scope.primary} but does not import it. Claude Code and omp both load only CLAUDE.md when both exist, so ${scope.primary} never loads from here. Add a line reading "@${pointer === '.claude/CLAUDE.md' ? `../${target}` : target}".${others}`
 				)
 			);
 		}
@@ -1072,6 +1076,16 @@ function gateFeatures(index, findings, stats) {
 		const readers = new Map(contract.map((c) => [c, 0]));
 		const owners = new Map();
 		const claims = [];
+		const excepts = new Map();
+		/** A slice's `Except:` names what its globs deliberately leave to another slice. */
+		const excepted = (slice, path) =>
+			(excepts.get(slice) ?? []).some((e) => e === path || (isGlob(e) && !isGlob(path) && globRegex(e).test(path)));
+		for (const s of slices) {
+			const line = lineOf(index, s, /^\s*Except\s*:/);
+			if (!line) continue;
+			const { spans } = codeSpans(line.text);
+			excepts.set(s, spans.length > 0 ? spans : line.text.replace(/^\s*Except\s*:/, '').split(',').map((p) => p.trim()).filter(Boolean));
+		}
 		for (const s of slices) {
 			const owns = lineOf(index, s, /^\s*Owns\s*:/);
 			const reads = lineOf(index, s, /^\s*Reads\s*:/);
@@ -1105,8 +1119,15 @@ function gateFeatures(index, findings, stats) {
 				const x = claims[a];
 				const y = claims[b];
 				if (x.slice === y.slice || x.path === y.path || !ownershipOverlaps(x.path, y.path)) continue;
+				if (excepted(x.slice, y.path) || excepted(y.slice, x.path)) continue;
 				findings.push(
-					finding('warn', 'feature', y.slice, y.line, `${y.path} overlaps ${x.path}, owned by ${x.slice}. If the split is deliberate, say which files each side owns; two writers on one file is a merge conflict with a schedule.`)
+					finding(
+						'warn',
+						'feature',
+						y.slice,
+						y.line,
+						`${y.path} overlaps ${x.path}, owned by ${x.slice}. If the split is deliberate, write it down: an "Except:" line in the slice whose glob is wider, naming the other slice's path.`
+					)
 				);
 			}
 		for (const [c, n] of readers) {
@@ -1330,7 +1351,7 @@ function normalizeLine(line) {
  * headings (replaced by generated tables), a `###` heading promoted to its file's `#` title, and an
  * ownership row that became its slice's `Owns:` line.
  */
-function droppedLines(original, outputs, movedRows, ownershipTableKept) {
+export function droppedLines(original, outputs, movedRows = new Map(), ownershipTableKept = false) {
 	const have = new Map();
 	for (const content of outputs.values())
 		for (const l of splitLines(content)) {
@@ -1476,7 +1497,14 @@ function main(argv) {
 		return 2;
 	}
 	if (args.split !== undefined) {
-		const out = splitChecklist(resolve(args.root, args.split));
+		let out;
+		try {
+			out = splitChecklist(resolve(args.root, args.split));
+		} catch (error) {
+			// A refusal is an answer, not a crash: say why, exit "could not run".
+			process.stderr.write(`ef-check: ${error instanceof Error ? error.message : String(error)}\n`);
+			return 2;
+		}
 		process.stdout.write(
 			[
 				`split ${args.split}: ${out.written.length} files (${out.written.join(', ')})`,

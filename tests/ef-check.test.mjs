@@ -295,6 +295,16 @@ describe('single-source', () => {
 		const r = run({ 'AGENTS.md': rulebook(), 'CLAUDE.md': '@AGENTS.md\n\n## Invariants\n\n1. **Extra.** _Check:_ none — duplicated here on purpose.\n' });
 		assert.ok(errors(r, 'single-source').some((f) => /rules of its own/.test(f.message)));
 	});
+
+	test('with two pointers, the one that does not import is an error even if the other does', () => {
+		const r = run({ 'AGENTS.md': rulebook(), 'CLAUDE.md': '@AGENTS.md\n', '.claude/CLAUDE.md': '# Local notes\n' });
+		const found = errors(r, 'single-source');
+		assert.deepEqual(
+			found.map((f) => f.file),
+			['.claude/CLAUDE.md']
+		);
+		assert.match(found[0].message, /@\.\.\/AGENTS\.md/);
+	});
 });
 
 describe('bindings', () => {

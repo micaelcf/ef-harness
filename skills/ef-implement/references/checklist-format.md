@@ -122,7 +122,8 @@ Proof: `<the specific test invocation>`
 ```
 
 - `Owns:` is the files this slice alone writes, as code spans. No path appears in two slices; a glob
-  that overlaps another slice's files is flagged for review.
+  that overlaps another slice's files is a warning unless an `Except:` line says the split is
+  deliberate (see below).
 - `Reads:` is every contract file this slice codes against, relative to the feature directory.
   Its builder loads these and nothing else from `contract/`.
 - The heading carries the slice's **weight**: `wc -c` of the files it touches, divided by four.
@@ -303,9 +304,17 @@ gitignored. It is an error when:
   200, or the index defines a check
 
 A glob in one slice's `Owns:` that can cover another slice's path (`src/**` against `src/x.ts`) is a
-**warning**: real checklists split a tree on purpose ("everything under `orders/` except
-`review.svelte`"), and the gate cannot read the "except". Make each such split explicit in prose
-beside the `Owns:` lines.
+**warning**. When the split is deliberate ("everything under `orders/` except `review.svelte`"),
+write it down where the gate can read it: an `Except:` line in the slice with the wider glob, naming
+the other slice's entries.
+
+```markdown
+Owns: `src/orders/**`
+Except: `src/orders/review.svelte`
+```
+
+An `Except:` entry matches the other slice's `Owns:` entry exactly, or is a glob covering that
+literal path. The migration cannot infer these from prose, so add them after `--split`.
 
 A missing `## Requirements` section is a warning. The edit hook runs the same gate after each write,
 so a broken cross-reference comes back in the turn that made it.

@@ -3,9 +3,10 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { after, describe, test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
-import { check, splitChecklist } from '../skills/ef-readiness/scripts/ef-check.mjs';
-import { lines, makeRepo, pkg, removeRepo, rulebook } from './helpers.mjs';
+import { check, droppedLines, splitChecklist } from '../skills/ef-readiness/scripts/ef-check.mjs';
+import { CHECKER, lines, makeRepo, pkg, removeRepo, rulebook } from './helpers.mjs';
 
 const made = [];
 after(() => made.forEach(removeRepo));
@@ -168,6 +169,41 @@ describe('feature gate: overlapping ownership', () => {
 			warns.map((f) => f.message.split(' overlaps ')[0]),
 			['src/**/*.css', 'src/db/*.svelte']
 		);
+	});
+});
+
+describe('feature gate: deliberate splits', () => {
+	test('an Except: line naming the other slice\'s path silences the overlap, in either listing order', () => {
+		const base = (s0, s1) =>
+			splitFiles({
+				[`${F}/slices/S0-schema.md`]: ['# S0', '', ...s0, 'Reads: contract/shared.md, contract/schema.md', '', checkLine(1, 'RF-001 tables')].join('\n'),
+				[`${F}/slices/S1-ui.md`]: ['# S1', '', ...s1, 'Reads: contract/shared.md', '', checkLine(2, 'RF-002 screen')].join('\n')
+			});
+		const wide = ['Owns: `src/orders/**`'];
+		const narrow = ['Owns: `src/orders/review.svelte`'];
+		assert.equal(feature(base(wide, narrow)).warns.length, 1);
+		assert.equal(feature(base(narrow, wide)).warns.length, 1);
+		assert.deepEqual(feature(base([...wide, 'Except: `src/orders/review.svelte`'], narrow)).warns, []);
+		assert.deepEqual(feature(base(narrow, [...wide, 'Except: `src/orders/*.svelte`'])).warns, []);
+	});
+});
+
+describe('split migration guards', () => {
+	test('droppedLines reports a missing line, and counts a line written twice in the original', () => {
+		const original = '# T\n\nkeep me\nrepeat\nrepeat\nlost line\n';
+		const outputs = new Map([['checks.md', '# T\n\nkeep me\nrepeat\n']]);
+		assert.deepEqual(
+			droppedLines(original, outputs).map((m) => m.text),
+			['repeat', 'lost line']
+		);
+	});
+
+	test('a refused split exits 2 with the reason and no stack trace', () => {
+		const root = repo({ [`${F}/checks.md`]: '# Demo\n', [`${F}/log.md`]: 'mine\n' });
+		const run = spawnSync(process.execPath, [fileURLToPath(CHECKER), '--root', root, '--split', F], { encoding: 'utf8' });
+		assert.equal(run.status, 2);
+		assert.match(run.stderr, /^ef-check: .*log\.md already exists/);
+		assert.doesNotMatch(run.stderr, /\n\s+at /);
 	});
 });
 

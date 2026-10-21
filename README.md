@@ -611,8 +611,9 @@ public API above is considered stable.
 3. Set `version` in `.claude-plugin/plugin.json` and copy both manifests over their `.omp-plugin/`
    twins.
 4. `claude plugin validate . --strict` and `node --test tests/*.test.mjs`
-5. Commit (`:bookmark: chore(release): vX.Y.Z`) and push `main`.
-6. `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z`
+5. Commit (`:bookmark: chore(release): vX.Y.Z`) on a release branch, open a pull request, and merge
+   it once `verify` is green — `main` accepts changes only through a green PR.
+6. Tag the merged commit on `main`: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z`
 
 The [release workflow](.github/workflows/release.yml) runs on pushes to `main` and `v*` tags, and on
 every pull request. It runs the tests, and fails if the manifest pairs differ, if the version is not

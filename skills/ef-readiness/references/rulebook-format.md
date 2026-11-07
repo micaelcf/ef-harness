@@ -141,6 +141,7 @@ indented lines continue the previous value. A fenced block inside the section is
 | `migrations` | how a schema migration must be created |
 | `audit` | where side-effect or audit entries are catalogued |
 | `commits` | commit message convention |
+| `language` | language EF writes in for this repo, such as the feature docs |
 | `rulebook-budget` | budget override (see `budget`) |
 
 An unknown key is an `error`, because `gate:` for `gates:` should fail loudly, not silently.

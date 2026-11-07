@@ -388,6 +388,7 @@ tests:         <runner; how ONE test is named and invoked; known incompatibiliti
 migrations:    <how a schema migration must be created>
 audit:         <where side-effect/audit entries are catalogued, if the repo has one>
 commits:       <commit message convention>
+language:      <optional: language EF writes in, such as the feature docs>
 rulebook-budget: <optional: root <warn>/<fail>, scoped <fail> — <reason>>
 ```
 

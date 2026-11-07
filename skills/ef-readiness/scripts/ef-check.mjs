@@ -23,6 +23,7 @@ export const BINDING_KEYS = [
 	'migrations',
 	'audit',
 	'commits',
+	'language',
 	'rulebook-budget'
 ];
 

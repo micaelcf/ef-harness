@@ -7,6 +7,15 @@ All notable changes to EF Harness are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Optional bindings key `language:`: the language EF writes in for the repository.
+
+### Fixed
+
+- `ef-check` rejected `language:` as an unknown bindings key, although `/ef:feature-docs` told
+  repositories to name their language in the `ef-harness` block.
+
 ## [0.2.0] - 2026-10-21
 
 `/ef:ready` turns a repository's agent rulebook into a deterministic gate, and feature checklists

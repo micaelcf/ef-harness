@@ -15,7 +15,8 @@ what it built.**
 
 [Why](#why-this-exists) · [Quick start](#quick-start) · [How it works](#how-it-works) ·
 [Readiness](#readiness--the-rulebook-checked) · [Checklists](#the-checklist-split-by-reader) ·
-[Scale](#scale-pay-only-for-what-you-need) · [Bindings](#bindings--the-only-place-your-stack-appears) ·
+[Scale](#scale-pay-only-for-what-you-need) · [Jira issues](#jira-issues--outside-the-pipeline) ·
+[Bindings](#bindings--the-only-place-your-stack-appears) ·
 [Install](#installing-in-depth) · [Versioning](#versioning)
 
 </div>
@@ -68,6 +69,9 @@ and in writing.
   included.
 - ⚖️ **Priced shortcuts.** Small features skip steps — and each shortcut names exactly which class of
   failure it stops catching.
+- 🎫 **Jira issues from any feature.** `/ef:to-jira` turns a feature — settled or not — into a
+  small, product-level issue set, drafts it first, and pushes through your own Jira tools only
+  after you approve the set.
 
 ---
 
@@ -372,6 +376,27 @@ Two optional steps are decided by the same question — *can you name the thing 
 
 ---
 
+## Jira issues — outside the pipeline
+
+```text
+/ef:to-jira  "Users can export their audit log as CSV" SHOP pt-BR
+```
+
+`/ef:to-jira` needs no EF docs: a sentence, a pasted spec or a doc is enough. It settles the
+**project** (always explicit, never inferred) and the **language** (stated, or the `jira-language:`
+binding, otherwise asked), measures the whole feature, then groups it into tasks and subtasks by
+semantic change — product behaviour only, little text, complex flows as PNGs rendered locally (with
+no local renderer or attachment tool, the mermaid stays in the description and the gap
+is listed). Matching the team's Jira conventions and filling optional custom fields are each opt-in;
+fields the project requires are always filled or asked about, and people are assigned only when you
+name them.
+
+The draft lands in `.ef/<feature>/jira.md` — one file per feature, which becomes the record of the
+pushed keys. One approval pushes the set, after you strike what you do not want. With no Jira tools
+in the session it stops at the draft.
+
+---
+
 ## Bindings — the only place your stack appears
 
 Nothing in the harness hardcodes a command, an identifier rule or a convention. Each repository
@@ -389,6 +414,7 @@ migrations:    <how a schema migration must be created>
 audit:         <where side-effect/audit entries are catalogued, if the repo has one>
 commits:       <commit message convention>
 language:      <optional: language EF writes in, such as the feature docs>
+jira-language: <optional: language of /ef:to-jira issue sets; read by that command only>
 rulebook-budget: <optional: root <warn>/<fail>, scoped <fail> — <reason>>
 ```
 
@@ -417,6 +443,7 @@ unknown key fails `ef-check`, so `gate:` for `gates:` is caught rather than sile
 | `verification.md` — Swept and Coverage | Stage 4 | `.ef/<feature>/` |
 | `log.md` — Stage 3 record, handoffs, Landed, audit rounds | Stages 3, 4, 5 | `.ef/<feature>/` |
 | handoff doc (`API_HANDOFF*`, `FRONTEND_HANDOFF*`, `API_CHANGE_REQUEST_*`) | Stage 5 | feature docs folder |
+| `jira.md` — the Jira draft, then the pushed keys · `jira/*.png` rendered flows | `/ef:to-jira` | `.ef/<feature>/` |
 
 Product documents are cross-repo and live with the feature. Build artifacts are per repo and live
 in the repo. Nothing is written twice. `grill-decisions` outranks the RFC and PRD wherever they
@@ -493,6 +520,7 @@ commands/                        thin shims; the plugin is named `ef`, so each r
 ├── implement.md                 Stage 4
 ├── audit.md                     Stage 5
 ├── prototype.md                 optional
+├── to-jira.md                   optional — a feature as a Jira issue set, outside the stages
 └── ready.md                     once per repo — the rulebook, checked
 
 skills/                          the method — model-invoked, so it works without the command
@@ -500,6 +528,7 @@ skills/                          the method — model-invoked, so it works witho
 ├── ef-grilling/                 + references/{decision-record,deadlock}.md
 ├── ef-feature-docs/             + references/{rfc,prd,index}-template, amendments, anti-patterns
 ├── ef-prototype/
+├── ef-to-jira/
 ├── ef-perspective-discovery/
 ├── ef-implement/                + references/{checklist-format,sweep,orchestration}.md
 ├── ef-adversarial-audit/        + references/{defect-classes,contract-doc}.md
@@ -540,6 +569,9 @@ that needs them, never up front.
   each repository that opts in, and one edit hook that runs it. No MCP servers, no model calls, no
   network. Everything else is markdown, and everything the agent does runs under your tool's own
   permission model.
+- **One outside write, through your tools.** `/ef:to-jira` is the only command that writes to
+  another system. The harness ships no Jira client: the skill uses the Jira tools your session
+  already has, only after you approve the drafted set, and stops at the draft when there are none.
 - **The hook runs repository code — on purpose.** After a markdown edit it runs the repo's own
   `.ef/bin/ef-check.mjs` with `node`, in a child process, the way the repo's gates run. That is the
   trust you already extend to a repository's tests; a repo that has not vendored the checker runs

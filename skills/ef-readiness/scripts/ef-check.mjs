@@ -24,6 +24,7 @@ export const BINDING_KEYS = [
 	'audit',
 	'commits',
 	'language',
+	'jira-language',
 	'rulebook-budget'
 ];
 

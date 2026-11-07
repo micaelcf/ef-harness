@@ -9,7 +9,16 @@ All notable changes to EF Harness are documented here. The format follows
 
 ### Added
 
+- `/ef:to-jira` (`ef-to-jira`): turns any feature description into a small, product-level Jira
+  issue set, outside the five stages and with no EF docs required. Asks for the project (never
+  inferred) and the language (never defaulted), sizes tasks and subtasks by semantic change,
+  renders complex flows to PNG locally (or keeps the mermaid and lists the gap when it cannot), and
+  writes one file per feature, `.ef/<feature>/jira.md`: the draft, then the pushed keys. One
+  approval of a strikeable set pushes it through the session's own Jira tools; with none, it stops
+  at the draft. Team-pattern discovery and custom fields are opt-in; people are set only when named.
 - Optional bindings key `language:`: the language EF writes in for the repository.
+- Optional bindings key `jira-language:`: the language of `/ef:to-jira` issue sets, read by that
+  command only.
 
 ### Fixed
 

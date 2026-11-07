@@ -320,8 +320,8 @@ describe('bindings', () => {
 		assert.ok(found.some((f) => /script "nope"/.test(f.message)));
 	});
 
-	test('the language key is known, so a repo can name the language EF writes in', () => {
-		const r = run({ 'AGENTS.md': rulebook().replace('gates:', 'language: pt-BR\ngates:') });
+	test('the language keys are known, so a repo can name the language EF writes in', () => {
+		const r = run({ 'AGENTS.md': rulebook().replace('gates:', 'language: pt-BR\njira-language: es\ngates:') });
 		assert.deepEqual(errors(r, 'bindings'), []);
 	});
 

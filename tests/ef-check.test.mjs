@@ -320,6 +320,11 @@ describe('bindings', () => {
 		assert.ok(found.some((f) => /script "nope"/.test(f.message)));
 	});
 
+	test('the language keys are known, so a repo can name the language EF writes in', () => {
+		const r = run({ 'AGENTS.md': rulebook().replace('gates:', 'language: pt-BR\njira-language: es\ngates:') });
+		assert.deepEqual(errors(r, 'bindings'), []);
+	});
+
 	test('a vendored checker that no gate runs is a warning', () => {
 		const r = run({ 'AGENTS.md': rulebook(), '.ef/bin/ef-check.mjs': '' });
 		assert.equal(warns(r, 'bindings').length, 1);

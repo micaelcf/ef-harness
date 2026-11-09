@@ -23,6 +23,8 @@ export const BINDING_KEYS = [
 	'migrations',
 	'audit',
 	'commits',
+	'language',
+	'jira-language',
 	'rulebook-budget'
 ];
 

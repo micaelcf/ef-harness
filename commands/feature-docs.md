@@ -41,8 +41,8 @@ header so the document has somewhere for that to land.
 
 ## Language
 
-Author in **English** unless the user, or the repository's `ef-harness` block, names another
-language. Product copy quoted inside the documents keeps its own locale.
+Author in **English** unless the user, or the `language:` key of the repository's `ef-harness`
+block, names another language. Product copy quoted inside the documents keeps its own locale.
 
 ## Scope
 

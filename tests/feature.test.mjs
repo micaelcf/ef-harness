@@ -110,6 +110,16 @@ describe('feature gate: split layout', () => {
 		assert.deepEqual([...errors, ...warns], []);
 	});
 
+	test("/ef:to-jira's jira.md and rendered flows beside the checklist leave the gate clean", () => {
+		const { errors, warns } = feature(
+			splitFiles({
+				[`${F}/jira.md`]: 'Feature: demo · Project: SHOP · Language: en · 1 task\n\n1. **Export the audit log** → SHOP-430\n   Split: one change; covers C9 and RF-009.\n',
+				[`${F}/jira/1-export-flow.png`]: ''
+			})
+		);
+		assert.deepEqual([...errors, ...warns], []);
+	});
+
 	test('a slice the index does not list, and a listed slice that does not exist, are errors', () => {
 		const files = splitFiles({ [`${F}/slices/S2-extra.md`]: ['# S2', '', 'Owns: `src/x.ts`', 'Reads: contract/shared.md', '', checkLine(3)].join('\n') });
 		files[`${F}/checks.md`] += '| S9 | [slices/S9-gone.md](slices/S9-gone.md) | — |\n';

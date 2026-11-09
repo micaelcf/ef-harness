@@ -63,9 +63,9 @@ to land.
 
 ## Language
 
-Author in **English** unless the user, or the repository's `ef-harness` block, names another
-language. Product copy quoted inside the documents keeps its own locale. Technical terms stay in
-English regardless.
+Author in **English** unless the user, or the `language:` key of the repository's `ef-harness`
+block, names another language. Product copy quoted inside the documents keeps its own locale.
+Technical terms stay in English regardless.
 
 ## Scope
 

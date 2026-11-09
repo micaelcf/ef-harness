@@ -7,6 +7,11 @@ All notable changes to EF Harness are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-09
+
+`/ef:to-jira` turns any feature into a small, product-level Jira issue set, drafted before anything
+is pushed, and the bindings block can now name the language EF writes in.
+
 ### Added
 
 - `/ef:to-jira` (`ef-to-jira`): turns any feature description into a small, product-level Jira
@@ -23,7 +28,8 @@ All notable changes to EF Harness are documented here. The format follows
 ### Fixed
 
 - `ef-check` rejected `language:` as an unknown bindings key, although `/ef:feature-docs` told
-  repositories to name their language in the `ef-harness` block.
+  repositories to name their language in the `ef-harness` block. The checker's `VERSION` is now
+  `0.3.0`, so `/ef:ready` replaces an older vendored copy that would still reject the key.
 
 ## [0.2.0] - 2026-10-21
 
@@ -133,6 +139,7 @@ First public release.
 - Packaging as a **Claude Code plugin and an omp plugin** from the same tree (`ef@ef-harness`).
 - README with pipeline diagrams and animations, MIT license and security policy.
 
-[Unreleased]: https://github.com/micaelcf/ef-harness/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/micaelcf/ef-harness/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/micaelcf/ef-harness/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/micaelcf/ef-harness/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/micaelcf/ef-harness/releases/tag/v0.1.0
